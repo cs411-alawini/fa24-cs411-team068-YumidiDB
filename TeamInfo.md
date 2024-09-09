@@ -6,13 +6,13 @@
 | ----------- | ---------------------- |
 | TeamID      |        Team-068        |
 | TeamName    |         YumidiDB       |
-| Captain     |                        |
-| Captain     |  chenhan8@illinois.edu |
+| Captain     |           Kaiwen zhu            |
+| Captain     |  kevinz6@illinois.edu |
 | Member1     |                        |
 | Member1     |   yiweiw4@illinois.edu |
 | Member2     |       Hongyi Yang      |
 | Member2     |  hongyiy6@illinois.edu |
-| Member3     |                        |
+| Member3     |      Kaiwen zhu        |
 | Member3     |  peiyang7@illinois.edu |
 
 ## Project Information
