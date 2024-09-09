@@ -6,8 +6,8 @@
 | ----------- | ---------------------- |
 | TeamID      |        Team-068        |
 | TeamName    |         YumidiDB       |
-| Captain     |           Kaiwen zhu            |
-| Captain     |  kevinz6@illinois.edu |
+| Captain     |           Kaiwen Zhu            |
+| Captain     |  kaiwenz6@illinois.edu |
 | Member1     |                        |
 | Member1     |   yiweiw4@illinois.edu |
 | Member2     |       Hongyi Yang      |
