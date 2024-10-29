@@ -33,7 +33,7 @@ CREATE TABLE CustomizedRecipes (
     fat FLOAT,
     calories FLOAT,
     PRIMARY KEY(customized_id),
-    FOREIGN KEY(user_id) REFERENCES Users(user_id) ON DELETE SET CASCADE
+    FOREIGN KEY(user_id) REFERENCES Users(user_id) ON DELETE CASCADE
 );
 
 CREATE TABLE Reviews (
@@ -43,34 +43,34 @@ CREATE TABLE Reviews (
     rating FLOAT,
     date DATE,
     PRIMARY KEY(review_id),
-    FOREIGN KEY(recipe_id) REFERENCES Recipes(recipe_id) ON DELETE SET CASCADE
+    FOREIGN KEY(recipe_id) REFERENCES Recipes(recipe_id) ON DELETE CASCADE
 );
 
 CREATE TABLE ingredient_portion (
     id INT, 
-    recipe_id INT, 
-    ingredient_id INT,
+    customized_id INT NOT NULL, 
+    ingredient_id INT NOT NULL,
     ingredient_amount FLOAT, 
     ingredient_unit VARCHAR(255),
     PRIMARY KEY (id),
-    FOREIGN KEY(recipe_id) REFERENCES Recipes(recipe_id),
-    FOREIGN KEY(ingredient_id) REFERENCES Ingredients(ingredient_id)
+    FOREIGN KEY(customized_id) REFERENCES CustomizedRecipes(customized_id) ON DELETE CASCADE,
+    FOREIGN KEY(ingredient_id) REFERENCES Ingredients(ingredient_id) ON DELETE CASCADE
 );
 
 CREATE TABLE user_restrictions (
     id INT,
-    user_id INT,
-    ingredient_id INT,
+    user_id INT NOT NULL,
+    ingredient_id INT NOT NULL,
     PRIMARY KEY(id),
-    FOREIGN KEY(user_id) REFERENCES Users(user_id),
-    FOREIGN KEY(ingredient_id) REFERENCES Ingredients(ingredient_id)
+    FOREIGN KEY(user_id) REFERENCES Users(user_id) ON DELETE CASCADE,
+    FOREIGN KEY(ingredient_id) REFERENCES Ingredients(ingredient_id) ON DELETE CASCADE
 );
 
 CREATE TABLE recipe_ingredients (
     id INT,
-    recipe_id INT, 
-    ingredient_id INT,
+    recipe_id INT NOT NULL, 
+    ingredient_id INT NOT NULL,
     PRIMARY KEY(id),
-    FOREIGN KEY(recipe_id) REFERENCES Recipes(recipe_id),
-    FOREIGN KEY(ingredient_id) REFERENCES Ingredients(ingredient_id)
+    FOREIGN KEY(recipe_id) REFERENCES Recipes(recipe_id) ON DELETE CASCADE,
+    FOREIGN KEY(ingredient_id) REFERENCES Ingredients(ingredient_id) ON DELETE CASCADE
 );
