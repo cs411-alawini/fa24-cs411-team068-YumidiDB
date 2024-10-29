@@ -25,7 +25,7 @@ CREATE TABLE Ingredients (
 
 CREATE TABLE CustomizedRecipes (
     customized_id INT,
-    user_id INT,
+    user_id INT NOT NULL,
     name VARCHAR(255),
     minutes INT,
     steps TEXT,
@@ -33,17 +33,17 @@ CREATE TABLE CustomizedRecipes (
     fat FLOAT,
     calories FLOAT,
     PRIMARY KEY(customized_id),
-    FOREIGN KEY(user_id) REFERENCES Users(user_id)
+    FOREIGN KEY(user_id) REFERENCES Users(user_id) ON DELETE SET CASCADE
 );
 
 CREATE TABLE Reviews (
     review_id INT, 
-    recipe_id INT,
+    recipe_id INT NOT NULL,
     review_content TEXT, 
     rating FLOAT,
     date DATE,
     PRIMARY KEY(review_id),
-    FOREIGN KEY(recipe_id) REFERENCES Recipes(recipe_id)
+    FOREIGN KEY(recipe_id) REFERENCES Recipes(recipe_id) ON DELETE SET CASCADE
 );
 
 CREATE TABLE ingredient_portion (
@@ -74,7 +74,3 @@ CREATE TABLE recipe_ingredients (
     FOREIGN KEY(recipe_id) REFERENCES Recipes(recipe_id),
     FOREIGN KEY(ingredient_id) REFERENCES Ingredients(ingredient_id)
 );
-
-
-
-
