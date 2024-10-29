@@ -57,7 +57,7 @@ CREATE TABLE ingredient_portion (
     FOREIGN KEY(ingredient_id) REFERENCES Ingredients(ingredient_id) ON DELETE CASCADE
 );
 
-CREATE TABLE user_restrictions (
+CREATE TABLE user_restriction (
     id INT,
     user_id INT NOT NULL,
     ingredient_id INT NOT NULL,
