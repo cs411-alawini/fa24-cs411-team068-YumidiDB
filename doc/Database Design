@@ -66,7 +66,7 @@ CREATE TABLE user_restrictions (
     FOREIGN KEY(ingredient_id) REFERENCES Ingredients(ingredient_id) ON DELETE CASCADE
 );
 
-CREATE TABLE recipe_ingredients (
+CREATE TABLE recipe_ingredient (
     id INT,
     recipe_id INT NOT NULL, 
     ingredient_id INT NOT NULL,
