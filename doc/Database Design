@@ -40,7 +40,7 @@ CREATE TABLE Reviews (
     review_id INT, 
     recipe_id INT NOT NULL,
     review_content TEXT, 
-    rating FLOAT,
+    rating INT,
     date DATE,
     PRIMARY KEY(review_id),
     FOREIGN KEY(recipe_id) REFERENCES Recipes(recipe_id) ON DELETE CASCADE
