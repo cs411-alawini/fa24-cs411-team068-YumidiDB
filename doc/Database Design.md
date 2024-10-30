@@ -1,8 +1,11 @@
+## DDL for Table Creation
+
+```
 CREATE TABLE Recipes (
-    recipe_id INT, 
-    name VARCHAR(255), 
-    minutes INT, 
-    description TEXT, 
+    recipe_id INT,
+    name VARCHAR(255),
+    minutes INT,
+    description TEXT,
     steps TEXT,
     fat FLOAT,
     calories FLOAT,
@@ -37,9 +40,9 @@ CREATE TABLE CustomizedRecipes (
 );
 
 CREATE TABLE Reviews (
-    review_id INT, 
+    review_id INT,
     recipe_id INT NOT NULL,
-    review_content TEXT, 
+    review_content TEXT,
     rating INT,
     date DATE,
     PRIMARY KEY(review_id),
@@ -47,10 +50,10 @@ CREATE TABLE Reviews (
 );
 
 CREATE TABLE ingredient_portion (
-    id INT, 
-    customized_id INT NOT NULL, 
+    id INT,
+    customized_id INT NOT NULL,
     ingredient_id INT NOT NULL,
-    ingredient_amount FLOAT, 
+    ingredient_amount FLOAT,
     ingredient_unit VARCHAR(255),
     PRIMARY KEY (id),
     FOREIGN KEY(customized_id) REFERENCES CustomizedRecipes(customized_id) ON DELETE CASCADE,
@@ -68,9 +71,10 @@ CREATE TABLE user_restriction (
 
 CREATE TABLE recipe_ingredient (
     id INT,
-    recipe_id INT NOT NULL, 
+    recipe_id INT NOT NULL,
     ingredient_id INT NOT NULL,
     PRIMARY KEY(id),
     FOREIGN KEY(recipe_id) REFERENCES Recipes(recipe_id) ON DELETE CASCADE,
     FOREIGN KEY(ingredient_id) REFERENCES Ingredients(ingredient_id) ON DELETE CASCADE
 );
+```
