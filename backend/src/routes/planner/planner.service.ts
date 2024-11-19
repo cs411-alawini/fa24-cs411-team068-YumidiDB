@@ -1,11 +1,10 @@
-import { Recipe } from "../models/entity";
-import pool from './connection';
+import { Recipe } from "../../models/entity";
+import pool from "../../utils/connection";
 import { RowDataPacket } from "mysql2";
 
-
 export async function getTopRecipe(): Promise<any[]> {
-  const [rows] = await pool.query<RowDataPacket[]>(
-    `SELECT * FROM Recipes 
+    const [rows] = await pool.query<RowDataPacket[]>(
+        `SELECT * FROM Recipes 
      NATURAL JOIN Reviews 
      WHERE recipe_id IN (
        SELECT DISTINCT recipe_id 
@@ -14,12 +13,11 @@ export async function getTopRecipe(): Promise<any[]> {
        WHERE date >= ? AND date <= ?
      ) 
      ORDER BY rating DESC LIMIT 15`,
-    [`2003-01-01`, `2003-12-31`]
-  );
-  
-  return rows as any[];
-}
+        [`2003-01-01`, `2003-12-31`]
+    );
 
+    return rows as any[];
+}
 
 // export async function getPokemonByPokemonName(pokemonName: string): Promise<Recipe[]> {
 //   const queryName = pokemonName.toLowerCase();
