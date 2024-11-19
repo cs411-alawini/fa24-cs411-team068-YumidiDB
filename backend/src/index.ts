@@ -10,12 +10,6 @@ const PORT = 3007;
 app.use(cors());
 app.use(express.json());
 
-app.use(session({
-    secret: 'keyboard cat',
-    resave: false,
-    saveUninitialized: true,
-}))
-
 app.get("/", (req, res) => {
     res.send("Homepage of LettuceEat.");
 });
