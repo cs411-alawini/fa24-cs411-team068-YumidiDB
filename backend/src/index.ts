@@ -1,13 +1,23 @@
-import express from "express";
-import { testModel } from "./model/models";
+// index.ts
+import express from 'express';
+import { Request, Response } from 'express';
+import cors from 'cors';
+import topRecipe from '../src/routes/topRecipe'
 
 const app = express();
-const port = 3000;
+const PORT = 3007;
 
-app.get("/", (req, res) => {
-    res.send("LettuceEat Server Running!");
+app.use(cors());
+app.use(express.json());
+
+app.get('/api/', (req: Request, res: Response) => {
+    res.send('Homepage of LettuceEat.');
 });
 
-app.listen(port, () => {
-    console.log(`server listening on port ${port}`);
+app.use("/api/recipe", topRecipe);
+
+
+app.listen(PORT, () => {
+    console.log(`LettuceEat is running on http://localhost:${PORT}`);
 });
+
