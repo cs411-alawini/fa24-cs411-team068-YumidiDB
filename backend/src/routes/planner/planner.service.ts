@@ -19,6 +19,18 @@ export async function getTopRecipe(): Promise<any[]> {
     return rows as any[];
 }
 
+export async function getRecipeByFilter(filter: any): Promise<any[]> {
+    const { count, min_calories, max_calories } = filter;
+    const [rows] = await pool.query<RowDataPacket[]>(
+        `SELECT * FROM Recipes 
+     WHERE calories >= ? AND calories <= ?
+     ORDER BY rating DESC LIMIT ?`,
+        [min_calories, max_calories, count]
+    );
+
+    return rows as any[];
+}
+
 // export async function getPokemonByPokemonName(pokemonName: string): Promise<Recipe[]> {
 //   const queryName = pokemonName.toLowerCase();
 //   const sqlQuery = `SELECT * FROM pokemon.pokemon WHERE pokemonName LIKE '%${queryName}%';`;
