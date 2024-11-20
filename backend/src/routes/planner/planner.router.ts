@@ -26,14 +26,14 @@ router.get("/getRecipeByFilter", async (req: Request, res: Response) => {
         const filter = req.body;
         // check if filter is valid
         if (!filter.count || !filter.min_calories || !filter.max_calories) {
-            // res.status(400).json({
-            //     message: "Invalid filter",
-            //     error: "Filter must contain count, min_calories, and max_calories not NULL!!!!!!!!",
-            // });
-            // return;
-            filter.count = 5;
-            filter.min_calories = 0;
-            filter.max_calories = 1000;
+            res.status(400).json({
+                message: "Invalid filter",
+                error: "Filter must contain count, min_calories, and max_calories not NULL!!!!!!!!",
+            });
+            return;
+            // filter.count = 5;
+            // filter.min_calories = 0;
+            // filter.max_calories = 1000;
         }
         const recipes: Recipe[] = await getRecipeByFilter(filter);
         console.log(`Found ${recipes.length} recipes`);
