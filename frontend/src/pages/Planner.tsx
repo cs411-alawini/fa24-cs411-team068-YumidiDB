@@ -14,34 +14,25 @@ const Planner: React.FC = () => {
     const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
 
     const fetchRecipes = async () => {
-        try {
-            console.log("Fetching with calories range:", minCalories, maxCalories);
-            
+        try {            
             setIsLoading(true);
             setHasSearched(true);
-
+    
             const queryParams = new URLSearchParams({
                 min_calories: minCalories.toString(),
                 max_calories: maxCalories.toString(),
                 count: '15'
             });
-
+    
             const response = await fetch(
-                `http://localhost:3007/api/planner/getRecipeByFilter?${queryParams.toString()}`, 
-                {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                }
+                `http://localhost:3007/api/planner/getRecipeByFilter?${queryParams.toString()}`
             );
-
+        
             if (!response.ok) {
-                console.log("Response error:", response);
-                throw new Error('Failed to fetch recipes');
+                const errorData = await response.json().catch(() => null);
+                throw new Error(errorData?.message || 'Failed to fetch recipes');
             }
             const data = await response.json();
-            console.log("Received data:", data);
             setRecipes(data);
             setSelectedRecipe(null);
         } catch (err) {

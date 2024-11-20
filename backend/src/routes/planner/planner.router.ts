@@ -20,29 +20,28 @@ router.get("/getTopRecipe", async (req: Request, res: Response) => {
 });
 
 router.get("/getRecipeByFilter", async (req: Request, res: Response) => {
-    // request body: {"count": int, "min_calories": int, "max_calories": int}
     try {
-        console.log("Fetching recipes by filter...");
-        const filter = req.body;
-        // check if filter is valid
-        if (!filter.count || !filter.min_calories || !filter.max_calories) {
+        const filter = {
+            count: parseInt(req.query.count as string) || 15,
+            min_calories: parseInt(req.query.min_calories as string) || 0,
+            max_calories: parseInt(req.query.max_calories as string) || 1000
+        };
+
+        if (isNaN(filter.min_calories) || isNaN(filter.max_calories) || isNaN(filter.count)) {
             res.status(400).json({
                 message: "Invalid filter",
-                error: "Filter must contain count, min_calories, and max_calories not NULL!!!!!!!!",
+                error: "Parameters must be valid numbers"
             });
             return;
-            // filter.count = 5;
-            // filter.min_calories = 0;
-            // filter.max_calories = 1000;
         }
+
         const recipes: Recipe[] = await getRecipeByFilter(filter);
-        console.log(`Found ${recipes.length} recipes`);
         res.status(200).json(recipes);
     } catch (error) {
         console.error("Detailed error:", error);
         res.status(500).json({
             message: "Error fetching recipes by filter",
-            error: error.message,
+            error: error instanceof Error ? error.message : "Unknown error"
         });
     }
 });
