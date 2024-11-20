@@ -24,7 +24,7 @@ export async function getRecipeByFilter(filter: any): Promise<any[]> {
     const [rows] = await pool.query<RowDataPacket[]>(
         `SELECT * FROM Recipes 
      WHERE calories >= ? AND calories <= ?
-     ORDER BY rating DESC LIMIT ?`,
+     LIMIT ?`,
         [min_calories, max_calories, count]
     );
 
