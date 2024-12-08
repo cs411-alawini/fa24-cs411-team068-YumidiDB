@@ -51,7 +51,7 @@ export interface IngredientPortion {
     ingredient_unit: string;
 }
 
-export interface UserRestriction {
+export interface user_restriction {
     id: number;
     user_id: number;
     ingredient_id: number;
