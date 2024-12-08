@@ -15,7 +15,7 @@ const SECRET_KEY = 'your_secret_key';
 // response: {"message": "User registered"}
 // if username already exists, return 400 with message: "Username is not unique"
 // if user registered successfully, return 200 with message: "User registered"
-router.get("/register", async (req: Request, res: Response) => {
+router.post("/register", async (req: Request, res: Response) => {
     try {
         console.log("Registering user...");
         const username = req.body.username;
@@ -58,12 +58,12 @@ router.get("/register", async (req: Request, res: Response) => {
 // if username does not exist, return 400 with message: "User does not exist"
 // if password is incorrect, return 400 with message: "Invalid password"
 // if user logged in successfully, return 200 with message: "User logged in"
-router.get("/login", async (req: Request, res: Response) => {
+router.post("/login", async (req: Request, res: Response) => {
     try{
-        // const username = req.body.username;
-        // const password = req.body.password;
-        const username = "peiyang";
-        const password = "peiyang";
+        const username = req.body.username;
+        const password = req.body.password;
+        // const username = "peiyang";
+        // const password = "peiyang";
         if (!username || !password) {
             res.status(400).json({
                 message: "Invalid user",
@@ -116,7 +116,7 @@ router.get("/login", async (req: Request, res: Response) => {
 });
 
 // response: {"message": "User logged out"}
-router.get("/logout", async (req: Request, res: Response) => {
+router.post("/logout", async (req: Request, res: Response) => {
     try{
         await endAuthenticatedSession(req, (err: any) => {
             if (err) {
@@ -142,10 +142,10 @@ router.get("/logout", async (req: Request, res: Response) => {
 // request body: {"restriction_name": string}
 // response: [{"ingredient_name": string}, ...]
 // e.g. searchIgredientName("apple") => [{"ingredient_name": "apple"}, {"ingredient_name": "apple sauce"}, ...]
-router.get("/getIngredientNames", authenticateSession, async (req: Request, res: Response) => {
+router.post("/getIngredientNames", authenticateSession, async (req: Request, res: Response) => {
     try {
-        // const ingredientString = req.body.ingredientString;
-        const ingredientString = "apple";
+        const ingredientString = req.body.ingredientString;
+        // const ingredientString = "apple";
 
         console.log("Fetching restriction names...");
         const ingredientNames = await searchIgredientName(ingredientString);
@@ -165,11 +165,11 @@ router.get("/getIngredientNames", authenticateSession, async (req: Request, res:
 // response: [{"ingredient_name": string}, ...]
 // e.g. 
 // [
-//   { ingredient_name: 'appl' },
-//   { ingredient_name: 'apple brand' },
-//   { ingredient_name: 'apple chi' }
+//   { ingredient_name: 'apple' },
+//   { ingredient_name: 'apple brandy' },
+//   { ingredient_name: 'apple chip' }
 // ]
-router.get("/getRestrictionsByUserName", authenticateSession, async (req: Request, res: Response) => {
+router.post("/getRestrictionsByUserName", authenticateSession, async (req: Request, res: Response) => {
     try {
         // const ingredientString = req.body.ingredientString;
         const username = req.session.user;
@@ -193,12 +193,12 @@ router.get("/getRestrictionsByUserName", authenticateSession, async (req: Reques
 // if ingredient does not exist, return 400 with message: "Ingredient does not exist"
 // if user has already added the ingredient, return 400 with message: "User has already added ingredient"
 // if restriction added successfully, return 200 with message: "Restriction added"
-router.get("/addUserRestriction", authenticateSession, async (req: Request, res: Response) => {
+router.post("/addUserRestriction", authenticateSession, async (req: Request, res: Response) => {
     try {
         // const ingredientString = req.body.ingredientString;apple
         const username = req.session.user;
-        // const ingredientString = req.body.ingredient_name;
-        const ingredientString = "apple chip"; // hard code for now
+        const ingredientString = req.body.ingredient_name;
+        // const ingredientString = "apple chip"; // hard code for now
         console.log("Adding restriction...");
 
         const isIngredientExists = await checkIngredientExists(ingredientString);
