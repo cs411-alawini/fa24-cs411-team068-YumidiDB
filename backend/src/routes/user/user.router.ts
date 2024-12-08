@@ -13,6 +13,8 @@ const SECRET_KEY = 'your_secret_key';
 
 // body: {"username": string, "password": string}
 // response: {"message": "User registered"}
+// if username already exists, return 400 with message: "Username is not unique"
+// if user registered successfully, return 200 with message: "User registered"
 router.get("/register", async (req: Request, res: Response) => {
     try {
         console.log("Registering user...");
@@ -53,6 +55,9 @@ router.get("/register", async (req: Request, res: Response) => {
 
 // body: {"username": string, "password": string}
 // response: {"message": "User logged in"}, new session will be created
+// if username does not exist, return 400 with message: "User does not exist"
+// if password is incorrect, return 400 with message: "Invalid password"
+// if user logged in successfully, return 200 with message: "User logged in"
 router.get("/login", async (req: Request, res: Response) => {
     try{
         // const username = req.body.username;
@@ -184,7 +189,7 @@ router.get("/getRestrictionsByUserName", authenticateSession, async (req: Reques
 });
 
 // remain login status, send post request with body: {"ingredient_name": string}
-// response: {"message": "Restriction added"}
+// expected response: {"message": "Restriction added"}
 // if ingredient does not exist, return 400 with message: "Ingredient does not exist"
 // if user has already added the ingredient, return 400 with message: "User has already added ingredient"
 // if restriction added successfully, return 200 with message: "Restriction added"
@@ -231,7 +236,7 @@ router.get("/addUserRestriction", authenticateSession, async (req: Request, res:
 });
 
 // remain login status, send post request with body: {"ingredient_name": string}
-// response: {"message": "Restriction deleted"}
+// expected response: {"message": "Restriction deleted"}
 // if ingredient does not exist, return 400 with message: "Ingredient does not exist"
 // if user has not added the ingredient, return 400 with message: "User has not added ingredient"
 // if restriction deleted successfully, return 200 with message: "Restriction deleted"
