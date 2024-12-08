@@ -3,6 +3,7 @@ import express from "express";
 import { Request, Response } from "express";
 import cors from "cors";
 import plannerRouter from "./routes/planner/planner.router";
+import userRouter from "./routes/user/user.router";
 const app = express();
 const PORT = 3007;
 
@@ -14,6 +15,9 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/planner", plannerRouter);
+
+app.use("/api/user", userRouter);
+
 
 app.listen(PORT, () => {
     console.log(`LettuceEat is running on http://localhost:${PORT}`);
