@@ -22,4 +22,19 @@ export async function registerUser(user: any): Promise<any> {
     );
 }
 
+export async function checkUserExists(username: string): Promise<boolean> {
+    const [rows] = await pool.query<RowDataPacket[]>(
+        `SELECT * FROM Users WHERE user_name = ?`,
+        [username]
+    );
+    return rows.length > 0;
+}
+
+export async function getHashedPasswordByUsername(username: string): Promise<any> {
+    const [rows] = await pool.query<RowDataPacket[]>(
+        `SELECT hashed_password FROM Users WHERE user_name = ?`,
+        [username]
+    );
+    return rows[0];
+}
 

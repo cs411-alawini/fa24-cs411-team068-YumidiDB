@@ -1,10 +1,12 @@
 import { Router, Request, Response } from "express";
 import { getTopRecipe, getRecipeByFilter } from "./planner.service";
 import { Recipe } from "../../models/entity";
+import { authenticateSession } from '../../middleware/auth.middleware';
+
 
 const router = Router();
 
-router.get("/getTopRecipe", async (req: Request, res: Response) => {
+router.get("/getTopRecipe", authenticateSession,async (req: Request, res: Response) => {
     try {
         console.log("Fetching top recipes...");
         const topRecipe: Recipe[] = await getTopRecipe();
