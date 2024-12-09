@@ -105,3 +105,16 @@ export async function getRecipeWithinDate(
 
     return rows as any[];
 }
+
+// export async function getPokemonByPokemonName(pokemonName: string): Promise<Recipe[]> {
+//   const queryName = pokemonName.toLowerCase();
+//   const sqlQuery = `SELECT * FROM pokemon.pokemon WHERE pokemonName LIKE '%${queryName}%';`;
+//   const [rows] = await pool.query(sqlQuery);
+//   return rows as Recipe[];
+// }
+
+// export async function getPokemonByID(pokemonID: number): Promise<Recipe | undefined> {
+//   const sqlQuery = `SELECT * FROM pokemon WHERE pokemonID = ${pokemonID};`;
+//   const [rows] = await pool.query<RowDataPacket[]>(sqlQuery);
+//   return rows[0] as Recipe;
+// }
