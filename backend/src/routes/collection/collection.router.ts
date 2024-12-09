@@ -7,11 +7,11 @@ const router = Router();
 
 // remain login status, {"recipe_id": int}
 // expected response: {"message": "Customized recipe created"}
-router.post("/createCustomizedRecipe", authenticateSession,async (req: Request, res: Response) => {
+router.get("/createCustomizedRecipe", authenticateSession,async (req: Request, res: Response) => {
     try{
         const username = req.session.user;
-        const recipe_id = req.body.recipe_id;
-        // const recipe_id = 38; // test
+        // const recipe_id = req.body.recipe_id;
+        const recipe_id = 38; // test
 
         console.log("Creating customized recipe...");
 

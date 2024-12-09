@@ -100,6 +100,60 @@ export async function getRecipeWithinDate(start_date: string, end_date: string, 
     return rows as any[];
 }
 
+export async function popularTopRecipe(ingredient_name: string, calories: number, count: number): Promise<any[]> {
+    const [rows] = await pool.query<RowDataPacket[]>(
+        `SELECT Recipes.recipe_id, name, description, calories, COUNT(review_id) AS review_count
+        FROM Recipes
+            JOIN Reviews ON Recipes.recipe_id = Reviews.recipe_id
+        JOIN recipe_ingredient ON Recipes.recipe_id = recipe_ingredient.recipe_id
+            JOIN Ingredients ON Ingredients.ingredient_id = recipe_ingredient.ingredient_id
+        WHERE calories < ? and ingredient_name like ?
+        GROUP BY recipe_id, name, calories, description
+        HAVING COUNT(review_id) > 10
+        ORDER BY review_count DESC LIMIT ?;`,
+        [calories, `%${ingredient_name}%`, count]
+    );
+
+    return rows as any[];
+}
+
+export async function getComplexRecipe(count: number): Promise<any[]> {
+    const [rows] = await pool.query<RowDataPacket[]>(
+        `select recipe_id, name, count(*)
+        from Recipes NATURAL JOIN recipe_ingredient
+        GROUP BY recipe_id, name
+        HAVING COUNT(*) > 10
+        LIMIT ?;`
+        , [count]
+    );
+
+    return rows as any[];
+}
+
+export async function getIngredientsByRecipeId(recipe_id: number): Promise<Recipe[]> {
+    const [rows] = await pool.query<RowDataPacket[]>(
+        `SELECT * FROM recipe_ingredient WHERE recipe_id = ?;`,
+        [recipe_id]
+    );
+
+    console.log(rows);
+    return rows as Recipe[];
+}
+
+export async function getCaloriesDiff(): Promise<any[]> {
+
+    // CALL COMPARE_INGREDIENT_USE(@diff);
+    // SELECT @diff;
+    const [rows] = await pool.query<RowDataPacket[]>(
+        `CALL COMPARE_INGREDIENT_USE();`
+    );
+
+    console.log(rows[0][0].diff);
+    
+
+    return rows[0][0].diff;
+}
+
 // export async function getPokemonByPokemonName(pokemonName: string): Promise<Recipe[]> {
 //   const queryName = pokemonName.toLowerCase();
 //   const sqlQuery = `SELECT * FROM pokemon.pokemon WHERE pokemonName LIKE '%${queryName}%';`;

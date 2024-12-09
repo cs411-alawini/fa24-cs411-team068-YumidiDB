@@ -62,6 +62,21 @@ export async function createCustomizedRecipe(recipe_id: number, username: string
     // sql to clear table ingredient_portion: DELETE FROM ingredient_portion;
 }
 
+// export async function createCustomizedRecipe(recipe_id: number, username: string): Promise<any> {
+//     const [rows] = await pool.query<RowDataPacket[]>(
+//         `CALL createCustomizedRecipe(?, ?, @customized_id)`,
+//         [recipe_id, username]
+//     );
+
+//     const [result] = await pool.query<RowDataPacket[]>(
+//         `SELECT @customized_id AS customized_id`
+//     );
+
+//     console.log(result[0].customized_id);
+
+//     return result[0].customized_id;
+// }
+
 export async function getIngredients(customized_id: number, username: string): Promise<any> {
     const user_id = Math.abs(crc32.str(username));
 
