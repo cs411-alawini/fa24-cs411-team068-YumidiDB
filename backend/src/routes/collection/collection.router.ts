@@ -7,7 +7,7 @@ const router = Router();
 
 // remain login status, {"recipe_id": int}
 // expected response: {"message": "Customized recipe created"}
-router.get("/createCustomizedRecipe", authenticateSession,async (req: Request, res: Response) => {
+router.post("/createCustomizedRecipe", authenticateSession,async (req: Request, res: Response) => {
     try{
         const username = req.session.user;
         // const recipe_id = req.body.recipe_id;
@@ -40,7 +40,7 @@ router.get("/createCustomizedRecipe", authenticateSession,async (req: Request, r
 //         "ingredient_unit": null
 //     }, ...
 // ]
-router.get("/getIngredients", authenticateSession,async (req: Request, res: Response) => {
+router.post("/getIngredients", authenticateSession,async (req: Request, res: Response) => {
     try{
         const username = req.session.user;
         // const customized_id = req.body.customized_id;
@@ -76,7 +76,7 @@ router.get("/getIngredients", authenticateSession,async (req: Request, res: Resp
 //         "calories": 3
 //     },...
 // ]
-router.get("/getCustomizedRecipeList", authenticateSession,async (req: Request, res: Response) => {
+router.post("/getCustomizedRecipeList", authenticateSession,async (req: Request, res: Response) => {
     try{
         const username = req.session.user;
         console.log("Fetching customized recipe list...");
@@ -96,7 +96,7 @@ router.get("/getCustomizedRecipeList", authenticateSession,async (req: Request, 
 // updateIngredient(customized_id, ingredient_id, amount, unit)
 // expected response: {"message": "Ingredient updated"}
 // e.g. req: {"customized_id": 990291001, "ingredient_id": 3355, "amount": 100, "unit": "g"}
-router.get("/updateIngredient", authenticateSession,async (req: Request, res: Response) => {
+router.post("/updateIngredient", authenticateSession,async (req: Request, res: Response) => {
     try{
         // const username = req.session.user;
         // const customized_id = req.body.customized_id;
