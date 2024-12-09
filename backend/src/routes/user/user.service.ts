@@ -78,26 +78,22 @@ export async function hasUserAddRestrictedIngredient(username: string, ingredien
 
 export async function fetchIngredientbyUserName(username: string): Promise<any[]> {
     const user_id = Math.abs(crc32.str(username));
-    const [rows] = await pool.query<RowDataPacket[]>(
-        `SELECT ingredient_id FROM Ingredients 
+
+    const [ingredient_name_arr] = await pool.query<RowDataPacket[]>(
+        `SELECT ingredient_id, ingredient_name FROM Ingredients 
         NATURAL JOIN user_restriction 
         WHERE user_id = ?`,
         [user_id]
     );
-
-    // get ingredient_names by ingredient_id
-    const ingredient_id_arr = rows.map((row) => row.ingredient_id);
-    const ingredient_name_arr = await pool.query<RowDataPacket[]>(
-        `SELECT ingredient_name FROM Ingredients WHERE ingredient_id IN (?)`,
-        [ingredient_id_arr]
-    );
     console.log(ingredient_name_arr);
 
     // const ingredient_names = ingredient_name_arr[0].map((row) => row.ingredient_name.slice(0, -2));
-    const ingredient_names = ingredient_name_arr[0].map((row) => ({"ingredient_name": row.ingredient_name.slice(0, -1)}));
+    const ingredients = ingredient_name_arr.map((row) => ({
+        "ingredient_id": row.ingredient_id,
+        "ingredient_name": row.ingredient_name.slice(0, -1)}));
 
-    console.log(ingredient_names);
-    return rows as any[];
+    console.log(ingredients);
+    return ingredients as any[];
 }
 
 export async function addIngredient(username: string, ingredient_name: string): Promise<any> {

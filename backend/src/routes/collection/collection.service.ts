@@ -104,3 +104,18 @@ export async function updateIngredient(customized_id: number, ingredient_id: num
 
     return rows;
 }
+
+export async function deleteCustomizedRecipe(customized_id: number): Promise<any> {
+
+    const [rows] = await pool.query<RowDataPacket[]>(
+        `DELETE FROM CustomizedRecipes WHERE customized_id = ?`,
+        [customized_id]
+    );
+
+    const [rows2] = await pool.query<RowDataPacket[]>(
+        `DELETE FROM ingredient_portion WHERE customized_id = ?`,
+        [customized_id]
+    );
+
+    return rows;
+}
