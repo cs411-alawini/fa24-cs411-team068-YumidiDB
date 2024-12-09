@@ -10,19 +10,19 @@ const Planner: React.FC = () => {
     const [recipes, setRecipes] = useState<Recipe[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    
+
     // Parse calorie range from URL or use defaults
     const [minCalories, setMinCalories] = useState<number>(() => {
         if (calorieRange) {
-            const [min] = calorieRange.split('-').map(Number);
+            const [min] = calorieRange.split("-").map(Number);
             return isNaN(min) ? 0 : min;
         }
         return 0;
     });
-    
+
     const [maxCalories, setMaxCalories] = useState<number>(() => {
         if (calorieRange) {
-            const [, max] = calorieRange.split('-').map(Number);
+            const [, max] = calorieRange.split("-").map(Number);
             return isNaN(max) ? 1000 : max;
         }
         return 1000;
@@ -42,34 +42,38 @@ const Planner: React.FC = () => {
     }, [calorieRange]);
 
     const fetchRecipes = async () => {
-        try {            
+        try {
             setIsLoading(true);
-    
+
             const queryParams = new URLSearchParams({
                 min_calories: minCalories.toString(),
                 max_calories: maxCalories.toString(),
-                count: '15'
+                count: "15",
             });
-    
+
             console.log(queryParams.toString());
             const response = await fetch(
-                `http://localhost:3007/api/planner/getRecipeByFilter?${queryParams.toString()}`,{
+                `http://localhost:3007/api/planner/getRecipeByFilter?${queryParams.toString()}`,
+                {
                     method: "GET",
                     credentials: "include",
                     headers: {
                         "Content-Type": "application/json",
-                    }}
+                    },
+                }
             );
-        
+
             if (!response.ok) {
                 const errorData = await response.json().catch(() => null);
-                throw new Error(errorData?.message || 'Failed to fetch recipes');
+                throw new Error(
+                    errorData?.message || "Failed to fetch recipes"
+                );
             }
             const data = await response.json();
             setRecipes(data);
         } catch (err) {
-            setError(err instanceof Error ? err.message : 'An error occurred');
-            console.error('Error fetching recipes:', err);
+            setError(err instanceof Error ? err.message : "An error occurred");
+            console.error("Error fetching recipes:", err);
         } finally {
             setIsLoading(false);
         }
@@ -82,39 +86,39 @@ const Planner: React.FC = () => {
 
     const handleRecipeSelect = (recipe: Recipe) => {
         console.log(recipe);
-        navigate(`/recipe/${recipe.recipe_id}`, { 
-            state: { recipe }
+        navigate(`/recipe/${recipe.recipe_id}`, {
+            state: { recipe },
         });
     };
 
-
     const handleRecipeCollect = async (recipe: Recipe) => {
         try {
-            console.log(recipe.recipe_id)
+            console.log(recipe.recipe_id);
             const response = await fetch(
-                'http://localhost:3007/api/collection/createCustomizedRecipe',  
+                "http://localhost:3007/api/collection/createCustomizedRecipe",
                 {
-                    method: 'POST',
+                    method: "POST",
                     headers: {
-                        'Content-Type': 'application/json',
+                        "Content-Type": "application/json",
                     },
-                    credentials: 'include', 
+                    credentials: "include",
                     body: JSON.stringify({
-                        recipe_id: recipe.recipe_id, 
+                        recipe_id: recipe.recipe_id,
                     }),
                 }
             );
 
             if (!response.ok) {
                 const errorData = await response.json().catch(() => null);
-                throw new Error(errorData?.message || 'Failed to add to collection');
+                throw new Error(
+                    errorData?.message || "Failed to add to collection"
+                );
             }
 
             alert(`${recipe.name} has been added to your collection!`);
-
         } catch (err) {
-            alert('Failed to add recipe to collection');
-            console.error('Error adding to collection:', err);
+            alert("Failed to add recipe to collection");
+            console.error("Error adding to collection:", err);
             throw err;
         }
     };
@@ -133,7 +137,9 @@ const Planner: React.FC = () => {
                             <input
                                 type="number"
                                 value={minCalories}
-                                onChange={(e) => setMinCalories(Number(e.target.value))}
+                                onChange={(e) =>
+                                    setMinCalories(Number(e.target.value))
+                                }
                                 min="0"
                                 className="filter-input"
                             />
@@ -145,7 +151,9 @@ const Planner: React.FC = () => {
                             <input
                                 type="number"
                                 value={maxCalories}
-                                onChange={(e) => setMaxCalories(Number(e.target.value))}
+                                onChange={(e) =>
+                                    setMaxCalories(Number(e.target.value))
+                                }
                                 min={minCalories}
                                 className="filter-input"
                             />
@@ -166,14 +174,14 @@ const Planner: React.FC = () => {
             {isSearchResults && !isLoading && (
                 <div className="results-section">
                     <h3 className="results-title">
-                        {recipes.length > 0 
+                        {recipes.length > 0
                             ? `Found ${recipes.length} recipes`
-                            : 'No recipes found'}
+                            : "No recipes found"}
                     </h3>
                     <div className="recipe-grid">
                         {recipes.map((recipe) => (
-                            <RecipeCard 
-                                key={recipe.recipe_id} 
+                            <RecipeCard
+                                key={recipe.recipe_id}
                                 recipe={recipe}
                                 onSelect={handleRecipeSelect}
                                 onCollect={handleRecipeCollect}
@@ -185,7 +193,10 @@ const Planner: React.FC = () => {
 
             {!isSearchResults && (
                 <div className="initial-state">
-                    <p>Enter calorie range and click "Search Recipes" to find recipes.</p>
+                    <p>
+                        Enter calorie range and click "Search Recipes" to find
+                        recipes.
+                    </p>
                 </div>
             )}
         </div>
@@ -193,4 +204,3 @@ const Planner: React.FC = () => {
 };
 
 export default Planner;
-

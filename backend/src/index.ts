@@ -4,15 +4,17 @@ import { Request, Response } from "express";
 import cors from "cors";
 import plannerRouter from "./routes/planner/planner.router";
 import userRouter from "./routes/user/user.router";
-import collectionRouter from "./routes/collection/collection.router"
+import collectionRouter from "./routes/collection/collection.router";
 import session from "express-session";
 const app = express();
 const PORT = 3007;
-app.use(cors({
-    origin: 'http://localhost:5173',
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    credentials: true, // Allow cookies or session data
-}));
+app.use(
+    cors({
+        origin: "http://localhost:5173",
+        methods: ["GET", "POST", "PUT", "DELETE"],
+        credentials: true, // Allow cookies or session data
+    })
+);
 
 const corsOptions = {
     origin: "http://localhost:5173",
@@ -42,7 +44,6 @@ app.use("/api/planner", plannerRouter);
 app.use("/api/user", userRouter);
 
 app.use("/api/collection", collectionRouter);
-
 
 app.listen(PORT, () => {
     console.log(`LettuceEat is running on http://localhost:${PORT}`);
