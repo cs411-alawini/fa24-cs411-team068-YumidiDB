@@ -28,11 +28,11 @@ export function RecipeDetail({ recipe }: RecipeDetailProps) {
           </div>
           <div className="nutrition-item">
             <span>Fat</span>
-            <span className="nutrition-value">{fat}g</span>
+            <span className="nutrition-value">{fat}PDV</span>
           </div>
           <div className="nutrition-item">
             <span>Protein</span>
-            <span className="nutrition-value">{protein}g</span>
+            <span className="nutrition-value">{protein}PDV</span>
           </div>
         </div>
       </div>
