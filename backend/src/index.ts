@@ -4,6 +4,7 @@ import { Request, Response } from "express";
 import cors from "cors";
 import plannerRouter from "./routes/planner/planner.router";
 import userRouter from "./routes/user/user.router";
+import collectionRouter from "./routes/collection/collection.router";
 import session from 'express-session';
 const app = express();
 const PORT = 3007;
@@ -25,6 +26,8 @@ app.get("/", (req, res) => {
 app.use("/api/planner", plannerRouter);
 
 app.use("/api/user", userRouter);
+
+app.use("/api/collection", collectionRouter);
 
 
 app.listen(PORT, () => {
