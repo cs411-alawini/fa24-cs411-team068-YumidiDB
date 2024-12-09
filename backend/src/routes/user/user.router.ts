@@ -1,15 +1,25 @@
 import { Router, Request, Response } from "express";
-import { checkUniqueUsername, registerUser, checkUserExists, getHashedPasswordByUsername, 
-    searchIgredientName, checkIngredientExists, hasUserAddRestrictedIngredient, addIngredient, fetchIngredientbyUserName, deleteIngredient} from "./user.service";
+import {
+    checkUniqueUsername,
+    registerUser,
+    checkUserExists,
+    getHashedPasswordByUsername,
+    searchIgredientName,
+    checkIngredientExists,
+    hasUserAddRestrictedIngredient,
+    addIngredient,
+    fetchIngredientbyUserName,
+    deleteIngredient,
+} from "./user.service";
 import { Recipe } from "../../models/entity";
-import {startAuthenticatedSession, endAuthenticatedSession} from './auth';
-import { authenticateSession } from '../../middleware/auth.middleware';
+import { startAuthenticatedSession, endAuthenticatedSession } from "./auth";
+import { authenticateSession } from "../../middleware/auth.middleware";
 import bcrypt from "bcrypt";
-import jwt from 'jsonwebtoken';
+import jwt from "jsonwebtoken";
 
 const router = Router();
 
-const SECRET_KEY = 'your_secret_key';
+const SECRET_KEY = "your_secret_key";
 
 // body: {"username": string, "password": string}
 // response: {"message": "User registered"}
@@ -59,7 +69,7 @@ router.post("/register", async (req: Request, res: Response) => {
 // if password is incorrect, return 400 with message: "Invalid password"
 // if user logged in successfully, return 200 with message: "User logged in"
 router.post("/login", async (req: Request, res: Response) => {
-    try{
+    try {
         const username = req.body.username;
         const password = req.body.password;
         // const username = "peiyang";
@@ -84,7 +94,10 @@ router.post("/login", async (req: Request, res: Response) => {
         const hashedPassword = hashedPasswordObj.hashed_password;
 
         // console.log(hashedPassword);
-        const isPasswordCorrect = await bcrypt.compare(password, hashedPassword);
+        const isPasswordCorrect = await bcrypt.compare(
+            password,
+            hashedPassword
+        );
         if (!isPasswordCorrect) {
             res.status(400).json({
                 message: "Invalid password",
@@ -104,9 +117,7 @@ router.post("/login", async (req: Request, res: Response) => {
         res.status(200).json({
             message: "User logged in",
         });
-
-    }
-    catch (error) {
+    } catch (error) {
         console.error("Detailed error:", error);
         res.status(500).json({
             message: "Error logging in user",
@@ -117,7 +128,7 @@ router.post("/login", async (req: Request, res: Response) => {
 
 // response: {"message": "User logged out"}
 router.post("/logout", async (req: Request, res: Response) => {
-    try{
+    try {
         await endAuthenticatedSession(req, (err: any) => {
             if (err) {
                 throw err;
@@ -127,9 +138,7 @@ router.post("/logout", async (req: Request, res: Response) => {
         res.status(200).json({
             message: "User logged out",
         });
-
-    }
-    catch (error) {
+    } catch (error) {
         console.error("Detailed error:", error);
         res.status(500).json({
             message: "Error logging out user",
@@ -142,144 +151,168 @@ router.post("/logout", async (req: Request, res: Response) => {
 // request body: {"restriction_name": string}
 // response: [{"ingredient_name": string}, ...]
 // e.g. searchIgredientName("apple") => [{"ingredient_name": "apple"}, {"ingredient_name": "apple sauce"}, ...]
-router.post("/getIngredientNames", authenticateSession, async (req: Request, res: Response) => {
-    try {
-        const ingredientString = req.body.ingredientString;
-        // const ingredientString = "apple";
+// router.post("/getIngredientNames", async (req: Request, res: Response) => {
+router.post(
+    "/getIngredientNames",
+    authenticateSession,
+    async (req: Request, res: Response) => {
+        try {
+            const ingredientString = req.body.ingredientString;
+            // const ingredientString = "apple";
 
-        console.log("Fetching restriction names...");
-        const ingredientNames = await searchIgredientName(ingredientString);
-        console.log(`Found ${ingredientNames.length} restriction names`);
-        res.status(200).json(ingredientNames);
-
-    } catch (error) {
-        console.error("Detailed error:", error);
-        res.status(500).json({
-            message: "Error fetching restriction names",
-            error: error.message,
-        });
+            console.log("Fetching restriction names...");
+            const ingredientNames = await searchIgredientName(ingredientString);
+            console.log(`Found ${ingredientNames.length} restriction names`);
+            res.status(200).json(ingredientNames);
+        } catch (error) {
+            console.error("Detailed error:", error);
+            res.status(500).json({
+                message: "Error fetching restriction names",
+                error: error.message,
+            });
+        }
     }
-});
+);
 
 // remain login status, send post request with no body
 // response: [{"ingredient_name": string}, ...]
-// e.g. 
+// e.g.
 // [
 //   { ingredient_name: 'apple' },
 //   { ingredient_name: 'apple brandy' },
 //   { ingredient_name: 'apple chip' }
 // ]
-router.post("/getRestrictionsByUserName", authenticateSession, async (req: Request, res: Response) => {
-    try {
-        // const ingredientString = req.body.ingredientString;
-        const username = req.session.user;
+router.post(
+    "/getRestrictionsByUserName",
+    // authenticateSession,
+    async (req: Request, res: Response) => {
+        try {
+            // const ingredientString = req.body.ingredientString;
+            const username = req.session.user;
 
-        console.log("Fetching restriction names...");
-        const ingredientNames = await fetchIngredientbyUserName(username);
-        console.log(`Found ${ingredientNames.length} restriction names`);
-        res.status(200).json(ingredientNames);
-
-    } catch (error) {
-        console.error("Detailed error:", error);
-        res.status(500).json({
-            message: "Error fetching restriction names",
-            error: error.message,
-        });
+            console.log("Fetching restriction names...");
+            const ingredientNames = await fetchIngredientbyUserName(username);
+            console.log(`Found ${ingredientNames.length} restriction names`);
+            res.status(200).json(ingredientNames);
+        } catch (error) {
+            console.error("Detailed error:", error);
+            res.status(500).json({
+                message: "Error fetching restriction names",
+                error: error.message,
+            });
+        }
     }
-});
+);
 
 // remain login status, send post request with body: {"ingredient_name": string}
 // expected response: {"message": "Restriction added"}
 // if ingredient does not exist, return 400 with message: "Ingredient does not exist"
 // if user has already added the ingredient, return 400 with message: "User has already added ingredient"
 // if restriction added successfully, return 200 with message: "Restriction added"
-router.post("/addUserRestriction", authenticateSession, async (req: Request, res: Response) => {
-    try {
-        // const ingredientString = req.body.ingredientString;apple
-        const username = req.session.user;
-        const ingredientString = req.body.ingredient_name;
-        // const ingredientString = "apple chip"; // hard code for now
-        console.log("Adding restriction...");
+router.post(
+    "/addUserRestriction",
+    authenticateSession,
+    async (req: Request, res: Response) => {
+        try {
+            // const ingredientString = req.body.ingredientString;apple
+            const username = req.session.user;
+            const ingredientString = req.body.ingredient_name;
+            // const ingredientString = "apple chip"; // hard code for now
+            console.log("Adding restriction...");
 
-        const isIngredientExists = await checkIngredientExists(ingredientString);
-        if (!isIngredientExists) {
-            res.status(400).json({
-                message: "Ingredient " + ingredientString + " does not exist",
-                error: "Ingredient does not exist",
+            const isIngredientExists = await checkIngredientExists(
+                ingredientString
+            );
+            if (!isIngredientExists) {
+                res.status(400).json({
+                    message:
+                        "Ingredient " + ingredientString + " does not exist",
+                    error: "Ingredient does not exist",
+                });
+                return;
+            }
+
+            const hasUserAdded = await hasUserAddRestrictedIngredient(
+                username,
+                ingredientString
+            );
+            if (hasUserAdded) {
+                res.status(400).json({
+                    message:
+                        "User has already added ingredient " + ingredientString,
+                    error: "User has already added ingredient",
+                });
+                return;
+            }
+
+            const result = await addIngredient(username, ingredientString);
+
+            console.log("Restriction added");
+            res.status(200).json({
+                message: "Restriction added",
             });
-            return;
-        }
-
-        const hasUserAdded = await hasUserAddRestrictedIngredient(username, ingredientString);
-        if (hasUserAdded) {
-            res.status(400).json({
-                message: "User has already added ingredient " + ingredientString,
-                error: "User has already added ingredient",
+        } catch (error) {
+            console.error("Detailed error:", error);
+            res.status(500).json({
+                message: "Error fetching restriction names",
+                error: error.message,
             });
-            return;
         }
-
-        const result = await addIngredient(username, ingredientString);
-
-        console.log("Restriction added");
-        res.status(200).json({
-            message: "Restriction added",
-        });
-
-    } catch (error) {
-        console.error("Detailed error:", error);
-        res.status(500).json({
-            message: "Error fetching restriction names",
-            error: error.message,
-        });
     }
-});
+);
 
 // remain login status, send post request with body: {"ingredient_name": string}
 // expected response: {"message": "Restriction deleted"}
 // if ingredient does not exist, return 400 with message: "Ingredient does not exist"
 // if user has not added the ingredient, return 400 with message: "User has not added ingredient"
 // if restriction deleted successfully, return 200 with message: "Restriction deleted"
-router.get("/deleteUserRestriction", authenticateSession, async (req: Request, res: Response) => {
-    try {
-        const username = req.session.user;
-        // const ingredientString = req.body.ingredient_name;
-        const ingredientString = "apple chip"; // hard code for now
-        console.log("Deleting restriction...");
+router.get(
+    "/deleteUserRestriction",
+    authenticateSession,
+    async (req: Request, res: Response) => {
+        try {
+            const username = req.session.user;
+            // const ingredientString = req.body.ingredient_name;
+            const ingredientString = "apple chip"; // hard code for now
+            console.log("Deleting restriction...");
 
-        const isIngredientExists = await checkIngredientExists(ingredientString);
-        if (!isIngredientExists) {
-            res.status(400).json({
-                message: "Ingredient " + ingredientString + " does not exist",
-                error: "Ingredient does not exist",
+            const isIngredientExists = await checkIngredientExists(
+                ingredientString
+            );
+            if (!isIngredientExists) {
+                res.status(400).json({
+                    message:
+                        "Ingredient " + ingredientString + " does not exist",
+                    error: "Ingredient does not exist",
+                });
+                return;
+            }
+            console.log("Ingredient exists");
+
+            const hasUserAdded = await hasUserAddRestrictedIngredient(
+                username,
+                ingredientString
+            );
+
+            if (!hasUserAdded) {
+                res.status(400).json({
+                    message:
+                        "User has not added ingredient " + ingredientString,
+                    error: "User has not added ingredient",
+                });
+                return;
+            }
+            console.log("User has added ingredient");
+
+            const result = await deleteIngredient(username, ingredientString);
+        } catch (error) {
+            console.error("Detailed error:", error);
+            res.status(500).json({
+                message: "Error registering user",
+                error: error.message,
             });
-            return;
         }
-        console.log("Ingredient exists");
-
-        const hasUserAdded = await hasUserAddRestrictedIngredient(username, ingredientString);
-
-        if (!hasUserAdded) {
-            res.status(400).json({
-                message: "User has not added ingredient " + ingredientString,
-                error: "User has not added ingredient",
-            });
-            return;
-        }
-        console.log("User has added ingredient");
-
-        const result = await deleteIngredient(username, ingredientString);
-
-        
-    } catch (error) {
-        console.error("Detailed error:", error);
-        res.status(500).json({
-            message: "Error registering user",
-            error: error.message,
-        });
     }
-
-});
-    
+);
 
 export default router;
