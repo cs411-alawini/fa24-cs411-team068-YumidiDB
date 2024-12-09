@@ -44,11 +44,22 @@ router.get("/getIngredients", authenticateSession,async (req: Request, res: Resp
 });
 
 
-// remain login status, return customized recipe list of the user
-
+// remain login status, return customized recipe list of the user.
+// e.g. login with peiyang, send request, no body needed
+// [
+//     {
+//         "customized_id": 92837097,
+//         "user_id": 896173997,
+//         "name": "low fat berry blue frozen dessert",
+//         "minutes": 1485,
+//         "steps": "['toss 2 cups berries with sugar', 'let stand for 45 minutes , stirring occasionally', 'transfer berry-sugar mixture to food processor', 'add yogurt and process until smooth', 'strain through fine sieve', 'pour into baking pan', 'freeze uncovered until edges are solid but centre is soft', 'transfer to processor and blend until smooth again', 'return to pan and freeze until edges are solid', 'transfer to processor and blend until smooth again', 'fold in remaining 2 cups of blueberries', 'pour into plastic mold and freeze overnight', 'let soften slightly to serve']",
+//         "description": "this is yummy and low-fat, it always turns out perfect.",
+//         "fat": 170.9,
+//         "calories": 3
+//     },...
+// ]
 router.get("/getCustomizedRecipeList", authenticateSession,async (req: Request, res: Response) => {
     const username = req.session.user;
-
     console.log("Fetching customized recipe list...");
     const recipes = await getCustomizedRecipeList(username);
     console.log("Customized recipe list fetched");
