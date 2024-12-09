@@ -1,5 +1,5 @@
 import { Router, Request, Response } from "express";
-import { createCustomizedRecipe, getIngredients, getCustomizedRecipeList, updateIngredient } from "./collection.service";
+import { createCustomizedRecipe, getIngredients, getCustomizedRecipeList, updateIngredient, deleteCustomizedRecipe } from "./collection.service";
 import { Recipe } from "../../models/entity";
 import { authenticateSession } from '../../middleware/auth.middleware';
 
@@ -10,8 +10,8 @@ const router = Router();
 router.post("/createCustomizedRecipe", authenticateSession,async (req: Request, res: Response) => {
     try{
         const username = req.session.user;
-        // const recipe_id = req.body.recipe_id;
-        const recipe_id = 38; // test
+        const recipe_id = req.body.recipe_id;
+        // const recipe_id = 38; // test
 
         console.log("Creating customized recipe...");
 
@@ -43,8 +43,8 @@ router.post("/createCustomizedRecipe", authenticateSession,async (req: Request, 
 router.post("/getIngredients", authenticateSession,async (req: Request, res: Response) => {
     try{
         const username = req.session.user;
-        // const customized_id = req.body.customized_id;
-        const customized_id = 990291001; // test
+        const customized_id = req.body.customized_id;
+        // const customized_id = 990291001; // test
         console.log("Fetching ingredients...");
         const ingredients = await getIngredients(customized_id, username);
         console.log("Ingredients fetched");
@@ -98,17 +98,17 @@ router.post("/getCustomizedRecipeList", authenticateSession,async (req: Request,
 // e.g. req: {"customized_id": 990291001, "ingredient_id": 3355, "amount": 100, "unit": "g"}
 router.post("/updateIngredient", authenticateSession,async (req: Request, res: Response) => {
     try{
-        // const username = req.session.user;
-        // const customized_id = req.body.customized_id;
-        // const ingredient_id = req.body.ingredient_id;
-        // const amount = req.body.amount;
-        // const unit = req.body.unit;
-
         const username = req.session.user;
-        const customized_id = 990291001;
-        const ingredient_id = 3355;
-        const amount = 100;
-        const unit = "g";
+        const customized_id = req.body.customized_id;
+        const ingredient_id = req.body.ingredient_id;
+        const amount = req.body.amount;
+        const unit = req.body.unit;
+
+        // const username = req.session.user;
+        // const customized_id = 990291001;
+        // const ingredient_id = 3355;
+        // const amount = 100;
+        // const unit = "g";
     
         const result = await updateIngredient(customized_id, ingredient_id, amount, unit);
 
@@ -124,5 +124,25 @@ router.post("/updateIngredient", authenticateSession,async (req: Request, res: R
     }
 });
 
+// remain login status, {"customized_id": number}, delete customized recipe
+// expected response: {"message": "Customized recipe deleted"}
+router.post("/deleteCustomizedRecipe", authenticateSession,async (req: Request, res: Response) => {
+    try{
+        const username = req.session.user;
+        const customized_id = req.body.customized_id;
+        // const customized_id = 788071968; // test
+        console.log("Deleting customized recipe...");
+        const result = await deleteCustomizedRecipe(customized_id);
+        console.log("Customized recipe deleted");
+        res.status(200).json({"message": "Customized recipe deleted"});
+    } catch (error) {
+        console.error("Detailed error:", error);
+        res.status(500).json({
+            message: "Error deleting customized recipe",
+            error: error.message,
+        });
+    }
+
+});
 
 export default router;
