@@ -10,7 +10,6 @@ interface Ingredient {
     unit: string;
 }
 
-
 const EditableRecipeDetail: React.FC = () => {
     const location = useLocation();
     const navigate = useNavigate();
@@ -18,7 +17,6 @@ const EditableRecipeDetail: React.FC = () => {
     const [recipe, setRecipe] = useState<CustomizedRecipe>(initialRecipe);
     const [ingredients, setIngredients] = useState<Ingredient[]>([]);
     const [editingIngredient, setEditingIngredient] = useState<number | null>(null);
-    const [isLoading, setIsLoading] = useState(false);
     const [isLoadingIngredients, setIsLoadingIngredients] = useState(true);
 
     if (!recipe) {
@@ -59,7 +57,6 @@ const EditableRecipeDetail: React.FC = () => {
             }
 
             await fetchIngredients();
-            console.log(ingredient);
             setEditingIngredient(null);
             alert('Ingredient updated successfully!');
         } catch (err) {
@@ -81,7 +78,6 @@ const EditableRecipeDetail: React.FC = () => {
         setIngredients(updatedIngredients);
     };
 
-
     const fetchIngredients = useCallback(async () => {
         try {
             const response = await fetch('http://localhost:3007/api/collection/getIngredients', {
@@ -97,13 +93,13 @@ const EditableRecipeDetail: React.FC = () => {
             if (!response.ok) {
                 throw new Error('Failed to fetch ingredients');
             }
-    
+
             const data = await response.json();
             const mappedIngredients = data.map((ing: any) => ({
                 ingredient_id: ing.ingredient_id,
                 ingredient_name: ing.ingredient_name,
-                amount: ing.ingredient_amount, 
-                unit: ing.ingredient_unit 
+                amount: ing.ingredient_amount,
+                unit: ing.ingredient_unit
             }));
             setIngredients(mappedIngredients);
         } catch (err) {
@@ -119,55 +115,17 @@ const EditableRecipeDetail: React.FC = () => {
         }
     }, [recipe, fetchIngredients]);
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        const { name, value } = e.target;
-        setRecipe(prev => ({
-            ...prev,
-            [name]: value
-        }));
-    };
-
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setIsLoading(true);
-        
-        try {
-            const response = await fetch(
-                `http://localhost:3007/api/recipes/update/${recipe.customized_id}`,
-                {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(recipe),
-                }
-            );
-
-            if (!response.ok) {
-                throw new Error('Failed to update recipe');
-            }
-
-            alert('Recipe updated successfully!');
-            navigate('/collection');
-        } catch (err) {
-            alert('Failed to update recipe');
-            console.error('Error updating recipe:', err);
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
     return (
         <div className="editable-recipe-container">
             <button 
                 onClick={() => navigate('/collection')}
                 className="back-button"
             >
-                ← 
+                ←
             </button>
 
-            <form onSubmit={handleSubmit} className="recipe-form">
-                <h2>Edit Recipe</h2>
+            <div className="recipe-form">
+                <h2>{recipe.name}</h2>
                 
                 <div className="form-group ingredients-section">
                     <h3>Ingredients</h3>
@@ -233,103 +191,46 @@ const EditableRecipeDetail: React.FC = () => {
                     )}
                 </div>
 
-                <div className="form-group">
-                    <label>Name:</label>
-                    <input
-                        type="text"
-                        name="name"
-                        value={recipe.name}
-                        onChange={handleChange}
-                        required
-                    />
-                </div>
-
-                <div className="form-group">
-                    <label>Description:</label>
-                    <textarea
-                        name="description"
-                        value={recipe.description}
-                        onChange={handleChange}
-                        required
-                    />
-                </div>
-
-                <div className="form-row">
-                    <div className="form-group">
-                        <label>Minutes:</label>
-                        <input
-                            type="number"
-                            name="minutes"
-                            value={recipe.minutes}
-                            onChange={handleChange}
-                            min="0"
-                        />
+                <div className="details-section">
+                    <div className="detail-group">
+                        <h3>Description</h3>
+                        <p>{recipe.description}</p>
                     </div>
 
-                    <div className="form-group">
-                        <label>Calories:</label>
-                        <input
-                            type="number"
-                            name="calories"
-                            value={recipe.calories}
-                            onChange={handleChange}
-                            min="0"
-                        />
-                    </div>
-                </div>
+                    <div className="detail-row">
+                        <div className="detail-group">
+                            <h3>Preparation Time</h3>
+                            <p>{Math.floor(recipe.minutes/60)}h {recipe.minutes%60}m</p>
+                        </div>
 
-                <div className="form-row">
-                    <div className="form-group">
-                        <label>Fat:</label>
-                        <input
-                            type="number"
-                            name="fat"
-                            value={recipe.fat}
-                            onChange={handleChange}
-                            min="0"
-                        />
+                        <div className="detail-group">
+                            <h3>Calories</h3>
+                            <p>{recipe.calories}</p>
+                        </div>
                     </div>
 
-                    <div className="form-group">
-                        <label>Protein:</label>
-                        <input
-                            type="number"
-                            name="protein"
-                            value={recipe.protein}
-                            onChange={handleChange}
-                            min="0"
-                        />
+                    <div className="detail-row">
+                        <div className="detail-group">
+                            <h3>Fat</h3>
+                            <p>{recipe.fat} PDV</p>
+                        </div>
+
+                        <div className="detail-group">
+                            <h3>Protein</h3>
+                            <p>{recipe.protein} PDV</p>
+                        </div>
+                    </div>
+
+                    <div className="detail-group">
+                        <h3>Steps</h3>
+                        <ol className="steps-list">
+                            {JSON.parse(recipe.steps.replace(/'/g, '"')).map((step: string, index: number) => (
+                                <li key={index}>{step}</li>
+                            ))}
+                        </ol>
                     </div>
                 </div>
-
-                <div className="form-group">
-                    <label>Steps:</label>
-                    <textarea
-                        name="steps"
-                        value={recipe.steps}
-                        onChange={handleChange}
-                        required
-                        rows={4}
-                    />
-                </div>
-
-                <div className="form-actions">
-                    <button 
-                        type="button" 
-                        onClick={() => navigate('/collection')}
-                        className="cancel-button"
-                    >
-                        Cancel
-                    </button>
-                    <button 
-                        type="submit" 
-                        className="save-button"
-                        disabled={isLoading}
-                    >
-                        {isLoading ? 'Saving...' : 'Save Changes'}
-                    </button>
-                </div>
-            </form>
+            </div>
         </div>
     );
 };
