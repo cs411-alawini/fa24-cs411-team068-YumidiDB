@@ -1,194 +1,104 @@
-import React, { useEffect, useState } from "react";
-import {
-    Container,
-    Typography,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
-    Button,
-    IconButton,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogTitle,
-    TextField,
-} from "@mui/material";
-import DeleteIcon from "@mui/icons-material/Delete";
-// import { useNavigate } from "react-router-dom";
-// import axios from 'axios';
-
-interface CustomizedRecipe {
-    customized_id: number;
-    user_id: number;
-    recipe_id: number;
-    name: string;
-    minutes: number;
-    description: string;
-    steps: string;
-    fat: number;
-    calories: number;
-    protein: number;
-}
+import React, { useState, useEffect } from "react";
+import { CustomizedRecipe } from "../models/entity";
+import { CollectionRecipeCard } from "../components/CollectionRecipeCard";
+import { useNavigate } from "react-router-dom";
+import "./styles/Collection.css";
 
 const Collection: React.FC = () => {
     const [recipes, setRecipes] = useState<CustomizedRecipe[]>([]);
-    const [selectedRecipe, setSelectedRecipe] =
-        useState<CustomizedRecipe | null>(null);
-    const [isDialogOpen, setIsDialogOpen] = useState(false);
-
-    const userId = 1; // Replace with actual user ID
-    // const navigate = useNavigate();
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
-        fetchRecipes();
+        fetchCollectedRecipes();
     }, []);
 
-    const fetchRecipes = async () => {
+    const fetchCollectedRecipes = async () => {
         try {
-            // const response = await axios.get(
-            //     `/api/customized-recipes?userId=${userId}`
-            // );
-            // setRecipes(response.data);
-        } catch (error) {
-            console.error("Error fetching recipes:", error);
-        }
-    };
-
-    const handleDelete = async (customized_id: number) => {
-        try {
-            // await axios.delete(`/api/customized-recipes/${customized_id}`);
-            // setRecipes((prev) =>
-            //     prev.filter((recipe) => recipe.customized_id !== customized_id)
-            // );
-            console.log(customized_id);
-        } catch (error) {
-            console.error("Error deleting recipe:", error);
-        }
-    };
-
-    const handleEdit = (recipe: CustomizedRecipe) => {
-        setSelectedRecipe(recipe);
-        setIsDialogOpen(true);
-    };
-
-    const handleUpdate = async () => {
-        if (selectedRecipe) {
-            try {
-                // await axios.put(
-                //     `/api/customized-recipes/${selectedRecipe.customized_id}`,
-                //     selectedRecipe
-                // );
-                // setIsDialogOpen(false);
-                // fetchRecipes();
-            } catch (error) {
-                console.error("Error updating recipe:", error);
+            const response = await fetch('http://localhost:3007/api/collection/getCustomizedRecipeList',{
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'include'});
+            if (!response.ok) {
+                throw new Error('Failed to fetch collections');
             }
+            const data = await response.json();
+            setRecipes(data);
+        } catch (err) {
+            setError(err instanceof Error ? err.message : 'An error occurred');
+        } finally {
+            setIsLoading(false);
         }
     };
 
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (selectedRecipe) {
-            setSelectedRecipe({
-                ...selectedRecipe,
-                [e.target.name]: e.target.value,
-            });
+    const handleRecipeDelete = async (recipe: CustomizedRecipe) => {
+        try {
+            const response = await fetch(
+                'http://localhost:3007/api/collection/deleteCustomizedRecipe',
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        customized_id: recipe.customized_id
+                    })
+                });
+    
+            if (!response.ok) {
+                throw new Error('Failed to delete recipe');
+            }
+    
+            alert('Recipe removed from collection');
+            setRecipes(recipes.filter(r => r.customized_id !== recipe.customized_id));
+        } catch (err) {
+            alert('Failed to delete recipe');
+            console.error('Error deleting recipe:', err);
         }
     };
+
+    const handleRecipeSelect = (recipe: CustomizedRecipe) => {
+        navigate(`/collection/recipe/${recipe.customized_id}`, { state: { recipe } });
+    };
+
+    if (isLoading) {
+        return <div className="loading">Loading your collection...</div>;
+    }
+
+    if (error) {
+        return <div className="error">Error: {error}</div>;
+    }
 
     return (
-        <Container>
-            <TableContainer>
-                <Table>
-                    <TableHead>
-                        <TableRow>
-                            <TableCell>Name</TableCell>
-                            <TableCell>Minutes</TableCell>
-                            <TableCell>Calories</TableCell>
-                            <TableCell>Actions</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {recipes.map((recipe) => (
-                            <TableRow key={recipe.customized_id}>
-                                <TableCell>{recipe.name}</TableCell>
-                                <TableCell>{recipe.minutes}</TableCell>
-                                <TableCell>{recipe.calories}</TableCell>
-                                <TableCell>
-                                    <Button onClick={() => handleEdit(recipe)}>
-                                        Edit
-                                    </Button>
-                                    <IconButton
-                                        onClick={() =>
-                                            handleDelete(recipe.customized_id)
-                                        }
-                                    >
-                                        <DeleteIcon />
-                                    </IconButton>
-                                </TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </TableContainer>
-
-            {/* Edit Dialog */}
-            <Dialog open={isDialogOpen} onClose={() => setIsDialogOpen(false)}>
-                <DialogTitle>Edit Recipe</DialogTitle>
-                <DialogContent>
-                    {selectedRecipe && (
-                        <>
-                            <TextField
-                                fullWidth
-                                margin="normal"
-                                label="Name"
-                                name="name"
-                                value={selectedRecipe.name}
-                                onChange={handleInputChange}
-                            />
-                            <TextField
-                                fullWidth
-                                margin="normal"
-                                label="Minutes"
-                                name="minutes"
-                                type="number"
-                                value={selectedRecipe.minutes}
-                                onChange={handleInputChange}
-                            />
-                            <TextField
-                                fullWidth
-                                margin="normal"
-                                label="Calories"
-                                name="calories"
-                                type="number"
-                                value={selectedRecipe.calories}
-                                onChange={handleInputChange}
-                            />
-                            <TextField
-                                fullWidth
-                                margin="normal"
-                                label="Description"
-                                name="description"
-                                multiline
-                                rows={4}
-                                value={selectedRecipe.description}
-                                onChange={handleInputChange}
-                            />
-                        </>
-                    )}
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={() => setIsDialogOpen(false)}>
-                        Cancel
-                    </Button>
-                    <Button variant="contained" onClick={handleUpdate}>
-                        Save
-                    </Button>
-                </DialogActions>
-            </Dialog>
-        </Container>
+        <div className="collection-container">
+            <h1 className="collection-title">My Recipe Collection</h1>
+            {recipes.length === 0 ? (
+                <div className="empty-collection">
+                    <p>Your collection is empty.</p>
+                    <button 
+                        onClick={() => navigate('/planner')}
+                        className="browse-button"
+                    >
+                        Browse Recipes
+                    </button>
+                </div>
+            ) : (
+                <div className="recipe-grid">
+                    {recipes.map((recipe) => (
+                        <CollectionRecipeCard
+                            key={recipe.customized_id}
+                            recipe={recipe}
+                            onSelect={handleRecipeSelect}
+                            onDelete={handleRecipeDelete}
+                        />
+                    ))}
+                </div>
+            )}
+        </div>
     );
 };
 

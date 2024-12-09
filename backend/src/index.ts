@@ -8,6 +8,13 @@ import collectionRouter from "./routes/collection/collection.router";
 import session from "express-session";
 const app = express();
 const PORT = 3007;
+app.use(
+    cors({
+        origin: "http://localhost:5173",
+        methods: ["GET", "POST", "PUT", "DELETE"],
+        credentials: true, // Allow cookies or session data
+    })
+);
 
 const corsOptions = {
     origin: "http://localhost:5173",
