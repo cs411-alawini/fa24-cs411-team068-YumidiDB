@@ -84,7 +84,7 @@ router.post("/getIngredients", authenticateSession,async (req: Request, res: Res
 //         "calories": 3
 //     },...
 // ]
-router.post("/getCustomizedRecipeList", authenticateSession,async (req: Request, res: Response) => {
+router.post("/getCustomizedRecipeList", authenticateSession, async (req: Request, res: Response) => {
     try{
         const username = req.session.user;
         console.log("Fetching customized recipe list...");

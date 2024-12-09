@@ -17,6 +17,7 @@ export interface CustomizedRecipe {
     customized_id: number;
     description: string;
     fat: number;
+    protein:number;
     minutes: number;
     name: string;
     steps: string;

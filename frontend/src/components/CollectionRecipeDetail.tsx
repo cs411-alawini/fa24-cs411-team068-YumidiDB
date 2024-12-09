@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Recipe } from "../models/entity";
-import "./RecipeDetail.css";
+import "./CollectionRecipeDetail.css"
 
 interface RecipeDetailProps {
   recipe: Recipe;
