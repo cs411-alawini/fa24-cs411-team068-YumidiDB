@@ -58,12 +58,12 @@ router.post("/register", async (req: Request, res: Response) => {
 // if username does not exist, return 400 with message: "User does not exist"
 // if password is incorrect, return 400 with message: "Invalid password"
 // if user logged in successfully, return 200 with message: "User logged in"
-router.get("/login", async (req: Request, res: Response) => {
+router.post("/login", async (req: Request, res: Response) => {
     try{
-        // const username = req.body.username;
-        // const password = req.body.password;
-        const username = "peiyang";
-        const password = "peiyang";
+        const username = req.body.username;
+        const password = req.body.password;
+        // const username = "peiyang";
+        // const password = "peiyang";
         if (!username || !password) {
             res.status(400).json({
                 message: "Invalid user",
