@@ -15,6 +15,9 @@ router.get("/createCustomizedRecipe", authenticateSession,async (req: Request, r
 
     const result = await createCustomizedRecipe(recipe_id, username);
 
+    console.log("Customized recipe created");
+    res.status(200).json({"message": "Customized recipe created"});
+
 });
 
 export default router;
