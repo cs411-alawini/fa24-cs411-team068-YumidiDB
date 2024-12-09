@@ -77,7 +77,6 @@ const Planner: React.FC = () => {
 
     const handleFilterSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        // Navigate to search results with calorie range in path
         navigate(`/planner/${minCalories}-${maxCalories}`);
     };
 
@@ -91,15 +90,17 @@ const Planner: React.FC = () => {
 
     const handleRecipeCollect = async (recipe: Recipe) => {
         try {
+            console.log(recipe.recipe_id)
             const response = await fetch(
-                'http://localhost:3007/api/collections/add',
+                'http://localhost:3007/api/collection/createCustomizedRecipe',  
                 {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
+                    credentials: 'include', 
                     body: JSON.stringify({
-                        recipeId: recipe.recipe_id,
+                        recipe_id: recipe.recipe_id, 
                     }),
                 }
             );
@@ -192,3 +193,4 @@ const Planner: React.FC = () => {
 };
 
 export default Planner;
+

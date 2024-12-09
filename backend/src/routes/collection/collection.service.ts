@@ -61,3 +61,46 @@ export async function createCustomizedRecipe(recipe_id: number, username: string
 
     // sql to clear table ingredient_portion: DELETE FROM ingredient_portion;
 }
+
+export async function getIngredients(customized_id: number, username: string): Promise<any> {
+    const user_id = Math.abs(crc32.str(username));
+
+    const [ingredients_arr] = await pool.query<RowDataPacket[]>(
+        `SELECT * FROM Ingredients NATURAL JOIN ingredient_portion WHERE customized_id = ?`,
+        [customized_id] 
+    );
+
+    // console.log(ingredients_arr);
+
+    const ingredients = ingredients_arr.map((row) => ({
+        "ingredient_id": row.ingredient_id,
+        "ingredient_name": row.ingredient_name.slice(0, -1),
+        "ingredient_amount": row.ingredient_amount,
+        "ingredient_unit": row.ingredient_unit}));
+
+    // console.log(ingredients);
+
+    return ingredients; 
+}
+
+export async function getCustomizedRecipeList(username: string): Promise<any> {
+    const user_id = Math.abs(crc32.str(username));
+
+    const [customized_recipe_list] = await pool.query<RowDataPacket[]>(
+        `SELECT * FROM CustomizedRecipes WHERE user_id = ?`,
+        [user_id]
+    );
+
+    console.log(customized_recipe_list);
+
+    return customized_recipe_list;
+}
+
+export async function updateIngredient(customized_id: number, ingredient_id: number, amount: number, unit: string): Promise<any> {
+    const [rows] = await pool.query<RowDataPacket[]>(
+        `UPDATE ingredient_portion SET ingredient_amount = ?, ingredient_unit = ? WHERE customized_id = ? AND ingredient_id = ?`,
+        [amount, unit, customized_id, ingredient_id]
+    );
+
+    return rows;
+}

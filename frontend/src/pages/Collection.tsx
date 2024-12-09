@@ -16,7 +16,12 @@ const Collection: React.FC = () => {
 
     const fetchCollectedRecipes = async () => {
         try {
-            const response = await fetch('http://localhost:3007/api/collections/get');
+            const response = await fetch('http://localhost:3007/api/collection/getCustomizedRecipeList',{
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'include'});
             if (!response.ok) {
                 throw new Error('Failed to fetch collections');
             }
