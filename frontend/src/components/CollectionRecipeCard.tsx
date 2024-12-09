@@ -1,11 +1,11 @@
 import React from "react";
-import { Recipe } from "../models/entity";
+import { CustomizedRecipe } from "../models/entity";
 import "./RecipeCard.css";
 
 interface RecipeCardProps {
-    recipe: Recipe;
-    onSelect: (recipe: Recipe) => void;
-    onDelete: (recipe: Recipe) => void;
+    recipe: CustomizedRecipe;
+    onSelect: (recipe: CustomizedRecipe) => void;
+    onDelete: (recipe: CustomizedRecipe) => void;
 }
 
 export function CollectionRecipeCard({ recipe, onSelect, onDelete }: RecipeCardProps) {

@@ -150,7 +150,6 @@ router.post("/deleteCustomizedRecipe", authenticateSession,async (req: Request, 
             error: error.message,
         });
     }
-
 });
 
 export default router;

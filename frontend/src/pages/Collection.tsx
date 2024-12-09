@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { Recipe } from "../models/entity";
+import { CustomizedRecipe } from "../models/entity";
 import { CollectionRecipeCard } from "../components/CollectionRecipeCard";
 import { useNavigate } from "react-router-dom";
 import "./styles/Collection.css";
 
 const Collection: React.FC = () => {
-    const [recipes, setRecipes] = useState<Recipe[]>([]);
+    const [recipes, setRecipes] = useState<CustomizedRecipe[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const navigate = useNavigate();
@@ -17,7 +17,7 @@ const Collection: React.FC = () => {
     const fetchCollectedRecipes = async () => {
         try {
             const response = await fetch('http://localhost:3007/api/collection/getCustomizedRecipeList',{
-                method: 'GET',
+                method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
@@ -34,30 +34,35 @@ const Collection: React.FC = () => {
         }
     };
 
-    const handleRecipeDelete = async (recipe: Recipe) => {
+    const handleRecipeDelete = async (recipe: CustomizedRecipe) => {
         try {
             const response = await fetch(
-                `http://localhost:3007/api/collections/delete/${recipe.recipe_id}`,
+                'http://localhost:3007/api/collection/deleteCustomizedRecipe',
                 {
-                    method: 'DELETE',
-                }
-            );
-
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        customized_id: recipe.customized_id
+                    })
+                });
+    
             if (!response.ok) {
                 throw new Error('Failed to delete recipe');
             }
-
+    
             alert('Recipe removed from collection');
-            // Refresh the list
-            setRecipes(recipes.filter(r => r.recipe_id !== recipe.recipe_id));
+            setRecipes(recipes.filter(r => r.customized_id !== recipe.customized_id));
         } catch (err) {
             alert('Failed to delete recipe');
             console.error('Error deleting recipe:', err);
         }
     };
 
-    const handleRecipeSelect = (recipe: Recipe) => {
-        navigate(`/collection/recipe/${recipe.recipe_id}`, { state: { recipe } });
+    const handleRecipeSelect = (recipe: CustomizedRecipe) => {
+        navigate(`/collection/recipe/${recipe.customized_id}`, { state: { recipe } });
     };
 
     if (isLoading) {
@@ -85,7 +90,7 @@ const Collection: React.FC = () => {
                 <div className="recipe-grid">
                     {recipes.map((recipe) => (
                         <CollectionRecipeCard
-                            key={recipe.recipe_id}
+                            key={recipe.customized_id}
                             recipe={recipe}
                             onSelect={handleRecipeSelect}
                             onDelete={handleRecipeDelete}

@@ -10,3 +10,16 @@ export interface Recipe {
     protein: number;
     rating?: string;
 }
+
+
+export interface CustomizedRecipe {
+    calories: number;
+    customized_id: number;
+    description: string;
+    fat: number;
+    minutes: number;
+    name: string;
+    steps: string;
+    user_id: number;
+    rating?: string;
+}
