@@ -51,7 +51,7 @@ router.get(
                 filter.min_calories = 0;
                 filter.max_calories = 1000;
             }
-            const recipes: Recipe[] = await getRecipeByFilter(filter);
+            const recipes: Recipe[] = await getRecipeByFilter(username, filter);
             console.log(`Found ${recipes.length} recipes`);
             res.status(200).json(recipes);
         } catch (error) {
