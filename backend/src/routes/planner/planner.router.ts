@@ -4,6 +4,7 @@ import { Recipe } from "../../models/entity";
 import { authenticateSession } from '../../middleware/auth.middleware';
 
 
+
 const router = Router();
 
 router.get("/getTopRecipe", authenticateSession,async (req: Request, res: Response) => {
@@ -21,23 +22,27 @@ router.get("/getTopRecipe", authenticateSession,async (req: Request, res: Respon
     }
 });
 
-router.get("/getRecipeByFilter", async (req: Request, res: Response) => {
+// remain login status, {"count": int, "min_calories": int, "max_calories": int}
+router.get("/getRecipeByFilter", authenticateSession, async (req: Request, res: Response) => {
+    // request body: {"count": int, "min_calories": int, "max_calories": int}
     try {
-        const filter = {
-            count: parseInt(req.query.count as string) || 15,
-            min_calories: parseInt(req.query.min_calories as string) || 0,
-            max_calories: parseInt(req.query.max_calories as string) || 1000
-        };
-
-        if (isNaN(filter.min_calories) || isNaN(filter.max_calories) || isNaN(filter.count)) {
-            res.status(400).json({
-                message: "Invalid filter",
-                error: "Parameters must be valid numbers"
-            });
-            return;
+        const username = req.session.user;
+        console.log("Fetching recipes by filter...");
+        console.log("username: ", username);
+        const filter = req.body;
+        // check if filter is valid
+        if (!filter.count || !filter.min_calories || !filter.max_calories) {
+            // res.status(400).json({
+            //     message: "Invalid filter",
+            //     error: "Filter must contain count, min_calories, and max_calories not NULL!!!!!!!!",
+            // });
+            // return;
+            filter.count = 5;
+            filter.min_calories = 0;
+            filter.max_calories = 1000;
         }
-
-        const recipes: Recipe[] = await getRecipeByFilter(filter);
+        const recipes: Recipe[] = await getRecipeByFilter(filter, username);
+        console.log(`Found ${recipes.length} recipes`);
         res.status(200).json(recipes);
     } catch (error) {
         console.error("Detailed error:", error);
