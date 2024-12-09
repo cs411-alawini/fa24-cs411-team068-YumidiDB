@@ -95,3 +95,12 @@ export async function getCustomizedRecipeList(username: string): Promise<any> {
 
     return customized_recipe_list;
 }
+
+export async function updateIngredient(customized_id: number, ingredient_id: number, amount: number, unit: string): Promise<any> {
+    const [rows] = await pool.query<RowDataPacket[]>(
+        `UPDATE ingredient_portion SET ingredient_amount = ?, ingredient_unit = ? WHERE customized_id = ? AND ingredient_id = ?`,
+        [amount, unit, customized_id, ingredient_id]
+    );
+
+    return rows;
+}
