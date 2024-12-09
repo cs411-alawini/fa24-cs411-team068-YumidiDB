@@ -1,5 +1,5 @@
 import { Router, Request, Response } from "express";
-import { getTopRecipe, getRecipeByFilter } from "./planner.service";
+import { getTopRecipe, getRecipeByFilter, getAvgRating } from "./planner.service";
 import { Recipe } from "../../models/entity";
 import { authenticateSession } from '../../middleware/auth.middleware';
 
@@ -52,5 +52,25 @@ router.get("/getRecipeByFilter", authenticateSession, async (req: Request, res: 
         });
     }
 });
+
+// remain login status, no body needed, return top 15 rated recipes
+router.get("/avgRating", authenticateSession,async (req: Request, res: Response) => {
+    try {;
+
+        console.log("Fetching average rating...");
+        const avgRating = await getAvgRating();
+        console.log("Average rating fetched");
+        res.status(200).json(avgRating);
+    } catch (error) {
+        console.error("Detailed error:", error);
+        res.status(500).json({
+            message: "Error fetching average rating",
+            error: error.message,
+        });
+    }
+});
+
+
+
 
 export default router;

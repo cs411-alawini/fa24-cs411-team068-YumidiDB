@@ -61,6 +61,21 @@ export async function getRecipeByFilter(filter: any, username: string): Promise<
     return rows as any[];
 }
 
+export async function getAvgRating(): Promise<any[]> {
+    const [rows] = await pool.query<RowDataPacket[]>(
+        `SELECT
+            recipe_id, name, AVG(rating)
+        FROM
+            Reviews NATURAL JOIN Recipes
+        GROUP BY
+            recipe_id
+        LIMIT 15;`,
+    );
+    console.log(rows);
+
+    return rows as any[];
+}
+
 // export async function getPokemonByPokemonName(pokemonName: string): Promise<Recipe[]> {
 //   const queryName = pokemonName.toLowerCase();
 //   const sqlQuery = `SELECT * FROM pokemon.pokemon WHERE pokemonName LIKE '%${queryName}%';`;
