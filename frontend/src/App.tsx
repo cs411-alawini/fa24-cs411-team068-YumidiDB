@@ -4,6 +4,7 @@ import User from "./pages/User";
 import Planner from "./pages/Planner";
 import RecipePage from "./pages/RecipePage";
 import Collection from "./pages/Collection";
+import CollectionRecipePage from "./pages/CollectionRecipePage";
 
 function App() {
     return (
@@ -14,6 +15,7 @@ function App() {
                 <Route path="/planner/:calorieRange" element={<Planner />} />
                 <Route path = "/recipe/:id" element={<RecipePage />} />
                 <Route path="collection" element={<Collection />} />
+                <Route path="/collection/recipe/:id" element={<CollectionRecipePage />} />
             </Route>
         </Routes>
     );
