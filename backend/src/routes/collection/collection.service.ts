@@ -61,3 +61,22 @@ export async function createCustomizedRecipe(recipe_id: number, username: string
 
     // sql to clear table ingredient_portion: DELETE FROM ingredient_portion;
 }
+
+export async function getIngredients(customized_id: number, username: string): Promise<any> {
+    const user_id = Math.abs(crc32.str(username));
+
+    const [ingredients_arr] = await pool.query<RowDataPacket[]>(
+        `SELECT * FROM Ingredients WHERE ingredient_id IN (SELECT ingredient_id FROM ingredient_portion WHERE customized_id = ?)`,
+        [customized_id] 
+    );
+
+    const ingredients = ingredients_arr.map((row) => ({
+        "ingredient_id": row.ingredient_id,
+        "ingredient_name": row.ingredient_name.slice(0, -1)}));
+
+    console.log(ingredients);
+
+    return ingredients;
+
+    
+}
