@@ -66,17 +66,32 @@ export async function getIngredients(customized_id: number, username: string): P
     const user_id = Math.abs(crc32.str(username));
 
     const [ingredients_arr] = await pool.query<RowDataPacket[]>(
-        `SELECT * FROM Ingredients WHERE ingredient_id IN (SELECT ingredient_id FROM ingredient_portion WHERE customized_id = ?)`,
+        `SELECT * FROM Ingredients NATURAL JOIN ingredient_portion WHERE customized_id = ?`,
         [customized_id] 
     );
 
+    // console.log(ingredients_arr);
+
     const ingredients = ingredients_arr.map((row) => ({
         "ingredient_id": row.ingredient_id,
-        "ingredient_name": row.ingredient_name.slice(0, -1)}));
+        "ingredient_name": row.ingredient_name.slice(0, -1),
+        "ingredient_amount": row.ingredient_amount,
+        "ingredient_unit": row.ingredient_unit}));
 
-    console.log(ingredients);
+    // console.log(ingredients);
 
-    return ingredients;
+    return ingredients; 
+}
 
-    
+export async function getCustomizedRecipeList(username: string): Promise<any> {
+    const user_id = Math.abs(crc32.str(username));
+
+    const [customized_recipe_list] = await pool.query<RowDataPacket[]>(
+        `SELECT * FROM CustomizedRecipes WHERE user_id = ?`,
+        [user_id]
+    );
+
+    console.log(customized_recipe_list);
+
+    return customized_recipe_list;
 }
