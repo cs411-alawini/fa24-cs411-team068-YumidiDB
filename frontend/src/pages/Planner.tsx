@@ -51,8 +51,14 @@ const Planner: React.FC = () => {
                 count: '15'
             });
     
+            console.log(queryParams.toString());
             const response = await fetch(
-                `http://localhost:3007/api/planner/getRecipeByFilter?${queryParams.toString()}`
+                `http://localhost:3007/api/planner/getRecipeByFilter?${queryParams.toString()}`,{
+                    method: "GET",
+                    credentials: "include",
+                    headers: {
+                        "Content-Type": "application/json",
+                    }}
             );
         
             if (!response.ok) {
