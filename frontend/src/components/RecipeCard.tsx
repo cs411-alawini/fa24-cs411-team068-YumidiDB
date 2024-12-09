@@ -4,15 +4,15 @@ import "./RecipeCard.css";
 
 interface RecipeCardProps {
   recipe: Recipe;
-  onSelect: (recipe: Recipe | null) => void;
-  isSelected: boolean;
+  onSelect: (recipe: Recipe) => void;
+  onCollect: (recipe: Recipe) => void;
 }
 
-export function RecipeCard({ recipe, onSelect, isSelected }: RecipeCardProps) {
+export function RecipeCard({ recipe, onSelect, onCollect}: RecipeCardProps) {
   const { name, description, rating } = recipe;
 
   return (
-    <div className={`card ${isSelected ? 'card-selected' : ''}`}>
+    <div className="card">
       <div className="card-content">
         <div className="card-header">
           <h2 className="card-title">{name}</h2>
@@ -27,13 +27,14 @@ export function RecipeCard({ recipe, onSelect, isSelected }: RecipeCardProps) {
 
       <div className="card-actions">
         <button 
-          className={`view-button ${isSelected ? 'view-button-active' : ''}`}
-          onClick={() => onSelect(isSelected ? null : recipe)}
+          className="view-button"
+          onClick={() => onSelect(recipe)}
         >
-          {isSelected ? 'Hide Details' : 'View Recipe'}
+          🍳 Details
         </button>
-        <button className="like-button" aria-label="Like recipe">
-          ❤️
+        <button className="like-button" aria-label="Like recipe"
+          onClick={()=> onCollect(recipe)}>
+          ⭐️ Collect
         </button>
       </div>
     </div>

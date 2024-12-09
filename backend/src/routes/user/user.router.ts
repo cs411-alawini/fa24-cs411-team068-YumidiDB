@@ -184,7 +184,7 @@ router.post(
 // ]
 router.post(
     "/getRestrictionsByUserName",
-    // authenticateSession,
+    authenticateSession,
     async (req: Request, res: Response) => {
         try {
             // const ingredientString = req.body.ingredientString;
@@ -223,6 +223,7 @@ router.post(
             const isIngredientExists = await checkIngredientExists(
                 ingredientString
             );
+            console.log(isIngredientExists);
             if (!isIngredientExists) {
                 res.status(400).json({
                     message:
@@ -231,6 +232,7 @@ router.post(
                 });
                 return;
             }
+            console.log(ingredientString);
 
             const hasUserAdded = await hasUserAddRestrictedIngredient(
                 username,
@@ -266,14 +268,14 @@ router.post(
 // if ingredient does not exist, return 400 with message: "Ingredient does not exist"
 // if user has not added the ingredient, return 400 with message: "User has not added ingredient"
 // if restriction deleted successfully, return 200 with message: "Restriction deleted"
-router.get(
+router.post(
     "/deleteUserRestriction",
     authenticateSession,
     async (req: Request, res: Response) => {
         try {
             const username = req.session.user;
-            // const ingredientString = req.body.ingredient_name;
-            const ingredientString = "apple chip"; // hard code for now
+            const ingredientString = req.body.ingredient_name;
+            // const ingredientString = "apple chip"; // hard code for now
             console.log("Deleting restriction...");
 
             const isIngredientExists = await checkIngredientExists(
@@ -305,6 +307,9 @@ router.get(
             console.log("User has added ingredient");
 
             const result = await deleteIngredient(username, ingredientString);
+            res.status(200).json({
+                message: "Restriction deleted",
+            });
         } catch (error) {
             console.error("Detailed error:", error);
             res.status(500).json({
