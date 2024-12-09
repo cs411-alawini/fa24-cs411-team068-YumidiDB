@@ -22,6 +22,7 @@ const LoginPage: React.FC = () => {
             setLoginFail(false);
             fetch("http://localhost:3007/api/user/login", {
                 method: "POST",
+                credentials: 'include',
                 headers: {
                     "Content-Type": "application/json",
                 },
@@ -44,6 +45,7 @@ const LoginPage: React.FC = () => {
         if (username && password) {
             fetch("http://localhost:3007/api/user/register", {
                 method: "POST",
+                credentials: 'include',
                 headers: {
                     "Content-Type": "application/json",
                 },
