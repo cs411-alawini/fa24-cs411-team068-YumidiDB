@@ -45,6 +45,7 @@ const LinkTab = ({ label, ...props }: LinkTabProps) => {
 
 const Layout: React.FC = () => {
     const [curPage, setCurPage] = useState(0);
+    const navigate = useNavigate();
 
     const handleChange = (_event: React.SyntheticEvent, newPage: number) => {
         setCurPage(newPage);
@@ -81,7 +82,14 @@ const Layout: React.FC = () => {
                     </Tabs>
                     <Button
                         sx={{ marginButton: "auto" }}
-                        // onClick={handleLogout}
+                        onClick={() => {
+                            fetch("http://localhost:3007/api/user/logout", {
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/json",
+                                },
+                            }).then(() => navigate("/login"));
+                        }}
                     >
                         Logout
                     </Button>

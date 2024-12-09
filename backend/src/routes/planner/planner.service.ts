@@ -19,15 +19,14 @@ export async function getTopRecipe(): Promise<any[]> {
     return rows as any[];
 }
 
-// export async function getPokemonByPokemonName(pokemonName: string): Promise<Recipe[]> {
-//   const queryName = pokemonName.toLowerCase();
-//   const sqlQuery = `SELECT * FROM pokemon.pokemon WHERE pokemonName LIKE '%${queryName}%';`;
-//   const [rows] = await pool.query(sqlQuery);
-//   return rows as Recipe[];
-// }
+export async function getRecipeByFilter(filter: any): Promise<any[]> {
+    const { count, min_calories, max_calories } = filter;
+    const [rows] = await pool.query<RowDataPacket[]>(
+        `SELECT * FROM Recipes 
+     WHERE calories >= ? AND calories <= ?
+     LIMIT ?`,
+        [min_calories, max_calories, count]
+    );
 
-// export async function getPokemonByID(pokemonID: number): Promise<Recipe | undefined> {
-//   const sqlQuery = `SELECT * FROM pokemon WHERE pokemonID = ${pokemonID};`;
-//   const [rows] = await pool.query<RowDataPacket[]>(sqlQuery);
-//   return rows[0] as Recipe;
-// }
+    return rows as any[];
+}

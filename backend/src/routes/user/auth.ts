@@ -13,7 +13,7 @@ const startAuthenticatedSession = (req, user, cb) => {
 
 
 
-const endAuthenticatedSession = (req, cb) => {
+const endAuthenticatedSession = (req, cb): Promise<void> => {
     return new Promise((resolve, reject) => {
         req.session.destroy((err) => {
             if (err) {
@@ -24,6 +24,8 @@ const endAuthenticatedSession = (req, cb) => {
         });
     });
 }; // endAuthenticatedSession
+
+
 
 
 export {
