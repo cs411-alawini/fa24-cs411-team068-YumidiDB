@@ -76,6 +76,30 @@ export async function getAvgRating(): Promise<any[]> {
     return rows as any[];
 }
 
+export async function getRecipeWithinDate(start_date: string, end_date: string, count: number): Promise<any[]> {
+    const [rows] = await pool.query<RowDataPacket[]>(
+        `SELECT
+            DISTINCT recipe_id, name, rating
+        FROM
+            Recipes NATURAL JOIN Reviews
+        WHERE
+            recipe_id in (
+                SELECT DISTINCT
+                    recipe_id
+                FROM
+                    Reviews NATURAL JOIN Recipes
+                WHERE
+                date >= ? and date <= ?
+                )
+        ORDER BY
+            rating DESC
+        LIMIT ?;`,
+        [start_date, end_date, count]
+    );
+
+    return rows as any[];
+}
+
 // export async function getPokemonByPokemonName(pokemonName: string): Promise<Recipe[]> {
 //   const queryName = pokemonName.toLowerCase();
 //   const sqlQuery = `SELECT * FROM pokemon.pokemon WHERE pokemonName LIKE '%${queryName}%';`;

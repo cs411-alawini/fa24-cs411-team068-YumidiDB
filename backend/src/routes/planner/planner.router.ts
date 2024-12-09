@@ -1,5 +1,5 @@
 import { Router, Request, Response } from "express";
-import { getTopRecipe, getRecipeByFilter, getAvgRating } from "./planner.service";
+import { getTopRecipe, getRecipeByFilter, getAvgRating, getRecipeWithinDate } from "./planner.service";
 import { Recipe } from "../../models/entity";
 import { authenticateSession } from '../../middleware/auth.middleware';
 
@@ -54,7 +54,7 @@ router.get("/getRecipeByFilter", authenticateSession, async (req: Request, res: 
 });
 
 // remain login status, no body needed, return top 15 rated recipes
-router.get("/avgRating", authenticateSession,async (req: Request, res: Response) => {
+router.post("/avgRating", authenticateSession,async (req: Request, res: Response) => {
     try {;
 
         console.log("Fetching average rating...");
@@ -65,6 +65,42 @@ router.get("/avgRating", authenticateSession,async (req: Request, res: Response)
         console.error("Detailed error:", error);
         res.status(500).json({
             message: "Error fetching average rating",
+            error: error.message,
+        });
+    }
+});
+
+// remain login status, {"start_date": string, "end_date": string, "count": int}
+// return top recipes within date, limited by count
+// e.g. req: {"start_date": "2003-1-1", "end_date": "2003-12-31", "count": 15}
+router.get("/topRecipeWithinDate", authenticateSession, async (req: Request, res: Response) => {
+    try {
+        // const start_date = req.body.start_date;
+        // const end_date = req.body.end_date;
+        // const count = req.body.count;
+        const start_date = '2003-1-1';
+        const end_date = '2003-12-31';
+        const count = 15;
+
+        console.log("Fetching top recipes within date...");
+
+        // check if filter is valid
+        if (!count || !start_date || !end_date) {
+            res.status(400).json({
+                message: "Invalid filter",
+                error: "Filter must contain count, start_date, and end_date not NULL!!!!!!!!",
+            });
+            return;
+        }
+        const recipes: Recipe[] = await getRecipeWithinDate(start_date, end_date, count);
+        console.log(`Found ${recipes.length} recipes`);
+        res.status(200).json(recipes);
+    }
+
+    catch (error) {
+        console.error("Detailed error:", error);
+        res.status(500).json({
+            message: "Error fetching top recipes within date",
             error: error.message,
         });
     }
