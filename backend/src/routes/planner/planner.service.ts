@@ -61,7 +61,8 @@ export async function getRecipeByFilter(filter: any, username: string): Promise<
     return rows as any[];
 }
 
-export async function getAvgRating(): Promise<any[]> {
+export async function getAvgRating(username: string): Promise<any[]> {
+    const user_id = Math.abs(crc32.str(username));
     const [rows] = await pool.query<RowDataPacket[]>(
         `SELECT
             recipe_id, name, AVG(rating)
@@ -69,14 +70,17 @@ export async function getAvgRating(): Promise<any[]> {
             Reviews NATURAL JOIN Recipes
         GROUP BY
             recipe_id
+        HAVING user_id not in (SELECT user_id from user_restriction where user_id = ?)
         LIMIT 15;`,
+        [user_id]
     );
     console.log(rows);
 
     return rows as any[];
 }
 
-export async function getRecipeWithinDate(start_date: string, end_date: string, count: number): Promise<any[]> {
+export async function getRecipeWithinDate(start_date: string, end_date: string, count: number, username: string): Promise<any[]> {
+    const user_id = Math.abs(crc32.str(username));
     const [rows] = await pool.query<RowDataPacket[]>(
         `SELECT
             DISTINCT recipe_id, name, rating
@@ -93,14 +97,16 @@ export async function getRecipeWithinDate(start_date: string, end_date: string, 
                 )
         ORDER BY
             rating DESC
+        HAVING user_id not in (SELECT user_id from user_restriction where user_id = ?)
         LIMIT ?;`,
-        [start_date, end_date, count]
+        [start_date, end_date, user_id, count]
     );
 
     return rows as any[];
 }
 
-export async function popularTopRecipe(ingredient_name: string, calories: number, count: number): Promise<any[]> {
+export async function popularTopRecipe(ingredient_name: string, calories: number, count: number, username: string): Promise<any[]> {
+    const user_id = Math.abs(crc32.str(username));
     const [rows] = await pool.query<RowDataPacket[]>(
         `SELECT Recipes.recipe_id, name, description, calories, COUNT(review_id) AS review_count
         FROM Recipes
@@ -108,32 +114,35 @@ export async function popularTopRecipe(ingredient_name: string, calories: number
         JOIN recipe_ingredient ON Recipes.recipe_id = recipe_ingredient.recipe_id
             JOIN Ingredients ON Ingredients.ingredient_id = recipe_ingredient.ingredient_id
         WHERE calories < ? and ingredient_name like ?
+        and ingredient_id not in (SELECT ingredient_id from user_restriction where user_id = ?)
         GROUP BY recipe_id, name, calories, description
         HAVING COUNT(review_id) > 10
         ORDER BY review_count DESC LIMIT ?;`,
-        [calories, `%${ingredient_name}%`, count]
+        [calories, `%${ingredient_name}%`, user_id, count]
     );
 
     return rows as any[];
 }
 
-export async function getComplexRecipe(count: number): Promise<any[]> {
+export async function getComplexRecipe(count: number, username: string): Promise<any[]> {
+    const user_id = Math.abs(crc32.str(username));
     const [rows] = await pool.query<RowDataPacket[]>(
         `select recipe_id, name, count(*)
         from Recipes NATURAL JOIN recipe_ingredient
         GROUP BY recipe_id, name
-        HAVING COUNT(*) > 10
+        HAVING COUNT(*) > 10 and ingredient_id not in (SELECT ingredient_id from user_restriction where user_id = ?)
         LIMIT ?;`
-        , [count]
+        , [user_id, count]
     );
 
     return rows as any[];
 }
 
-export async function getIngredientsByRecipeId(recipe_id: number): Promise<Recipe[]> {
+export async function getIngredientsByRecipeId(recipe_id: number, username: string): Promise<Recipe[]> {
+    const user_id = Math.abs(crc32.str(username));
     const [rows] = await pool.query<RowDataPacket[]>(
-        `SELECT * FROM recipe_ingredient WHERE recipe_id = ?;`,
-        [recipe_id]
+        `SELECT * FROM recipe_ingredient WHERE recipe_id = ? and ingredient_id not in (SELECT ingredient_id from user_restriction where user_id = ?);`,
+        [recipe_id, user_id]
     );
 
     console.log(rows);

@@ -7,7 +7,7 @@ import { authenticateSession } from '../../middleware/auth.middleware';
 
 const router = Router();
 
-router.post("/getTopRecipe", authenticateSession,async (req: Request, res: Response) => {
+router.get("/getTopRecipe", authenticateSession,async (req: Request, res: Response) => {
     try {
         console.log("Fetching top recipes...");
         const topRecipe: Recipe[] = await getTopRecipe();
@@ -23,7 +23,7 @@ router.post("/getTopRecipe", authenticateSession,async (req: Request, res: Respo
 });
 
 // remain login status, {"count": int, "min_calories": int, "max_calories": int}
-router.post("/getRecipeByFilter", authenticateSession, async (req: Request, res: Response) => {
+router.get("/getRecipeByFilter", authenticateSession, async (req: Request, res: Response) => {
     // request body: {"count": int, "min_calories": int, "max_calories": int}
     try {
         const username = req.session.user;
@@ -55,12 +55,13 @@ router.post("/getRecipeByFilter", authenticateSession, async (req: Request, res:
 
 // get ingredients of a recipe by recipe_id
 // remain login status, {"recipe_id": int}
-router.post("/getIngredientsByRecipeId", authenticateSession, async (req: Request, res: Response) => {
+router.get("/getIngredientsByRecipeId", authenticateSession, async (req: Request, res: Response) => {
     try {
-        const recipe_id = req.body.recipe_id;
-        // const recipe_id = 38; // test
+        const username = req.session.user;
+        // const recipe_id = req.body.recipe_id;
+        const recipe_id = 38; // test
         console.log("Fetching ingredients by recipe_id...");
-        const ingredients = await getIngredientsByRecipeId(recipe_id);
+        const ingredients = await getIngredientsByRecipeId(recipe_id, username);
         console.log("Ingredients fetched");
         res.status(200).json(ingredients);
     } catch (error) {
@@ -73,11 +74,11 @@ router.post("/getIngredientsByRecipeId", authenticateSession, async (req: Reques
 });
 
 // remain login status, no body needed, return top 15 rated recipes
-router.post("/avgRating", authenticateSession,async (req: Request, res: Response) => {
+router.get("/avgRating", authenticateSession,async (req: Request, res: Response) => {
     try {;
-
+        const username = req.session.user;
         console.log("Fetching average rating...");
-        const avgRating = await getAvgRating();
+        const avgRating = await getAvgRating(username);
         console.log("Average rating fetched");
         res.status(200).json(avgRating);
     } catch (error) {
@@ -97,6 +98,7 @@ router.get("/topRecipeWithinDate", authenticateSession, async (req: Request, res
         const start_date = req.body.start_date;
         const end_date = req.body.end_date;
         const count = req.body.count;
+        const username = req.session.user;
         // const start_date = '2003-1-1';
         // const end_date = '2003-12-31';
         // const count = 15;
@@ -111,7 +113,7 @@ router.get("/topRecipeWithinDate", authenticateSession, async (req: Request, res
             });
             return;
         }
-        const recipes: Recipe[] = await getRecipeWithinDate(start_date, end_date, count);
+        const recipes: Recipe[] = await getRecipeWithinDate(start_date, end_date, count, username);
         console.log(`Found ${recipes.length} recipes`);
         res.status(200).json(recipes);
     }
@@ -127,7 +129,7 @@ router.get("/topRecipeWithinDate", authenticateSession, async (req: Request, res
 
 // Get the recipe that uses ingredient A as an ingredient and has calories less than B and number of reviews larger than 10, order the result based review count from high to low.
 // remain login status, {"ingredient_name": string, "calories": int, "count": int}
-router.post("/popularTopRecipe", authenticateSession, async (req: Request, res: Response) => {
+router.get("/popularTopRecipe", authenticateSession, async (req: Request, res: Response) => {
     try {
         // const ingredient_name = "beef"; // test
         // const calories = 600; // test
@@ -135,9 +137,10 @@ router.post("/popularTopRecipe", authenticateSession, async (req: Request, res: 
         const ingredient_name = req.body.ingredient_name;
         const calories = req.body.calories;
         const count = req.body.count;
+        const username = req.session.user;
 
         console.log("Fetching popular top recipes...");
-        const recipes: Recipe[] = await popularTopRecipe(ingredient_name, calories, count);
+        const recipes: Recipe[] = await popularTopRecipe(ingredient_name, calories, count, username);
         console.log(`Found ${recipes.length} recipes`);
         res.status(200).json(recipes);
     } catch (error) {
@@ -151,14 +154,15 @@ router.post("/popularTopRecipe", authenticateSession, async (req: Request, res: 
 
 // Retrieve the recipes that require more than 10 ingredients.
 // remain login status, {"count": int}
-router.post("/getComplexRecipe", authenticateSession, async (req: Request, res: Response) => {
+router.get("/getComplexRecipe", authenticateSession, async (req: Request, res: Response) => {
     try {
 
         const count = 15; // test
         // const count = req.body.count;
+        const username = req.session.user;
 
         console.log("Fetching complex recipes...");
-        const recipes: Recipe[] = await getComplexRecipe(count);
+        const recipes: Recipe[] = await getComplexRecipe(count, username);
         console.log(`Found ${recipes.length} recipes`);
         res.status(200).json(recipes);
     } catch (error) {
